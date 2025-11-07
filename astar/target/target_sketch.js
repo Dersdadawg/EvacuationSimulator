@@ -1810,6 +1810,8 @@ def draw():
 
 `;
 
+let pyodide;
+
 function runCode() {
     let code = [
         placeholder,
@@ -1826,7 +1828,9 @@ function runCode() {
     pyodide.runPython(code);
 }
 
-languagePluginLoader.then(() => {
+async function main() {
+    pyodide = await loadPyodide();
+    
     pyodide.runPython(`
       import io, code, sys
       from js import pyodide, p5, window, document
@@ -1839,4 +1843,6 @@ languagePluginLoader.then(() => {
     }
 
     runCode();
-});
+}
+
+main();
