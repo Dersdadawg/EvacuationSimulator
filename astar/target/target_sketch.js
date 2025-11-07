@@ -1833,7 +1833,7 @@ async function main() {
     
     pyodide.runPython(`
       import io, code, sys
-      from js import pyodide, p5, window, document
+      from js import p5, window, document
       print(sys.version)
     `)
 
