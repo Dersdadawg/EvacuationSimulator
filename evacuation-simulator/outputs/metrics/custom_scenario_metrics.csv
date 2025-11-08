@@ -1,0 +1,14 @@
+Metric,Value
+total_time,50
+evacuated_count,1
+rescued_count,0
+stuck_count,0
+responder_distance,11
+hazard_coverage,0.3055555555555556
+evacuation_rate,0.0
+evacuees_found,1
+unconscious_count,0
+rooms_cleared,0
+total_rooms,1
+sweep_completion_rate,0.0
+evacuee_found_rate,1.0
