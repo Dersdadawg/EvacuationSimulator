@@ -1,0 +1,8 @@
+Metric,Value
+total_time,30
+evacuated_count,4
+rescued_count,0
+stuck_count,0
+responder_distance,120
+hazard_coverage,0.07166666666666667
+evacuation_rate,1.0
