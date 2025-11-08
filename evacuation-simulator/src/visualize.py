@@ -107,7 +107,8 @@ class Visualizer:
         self.ax.set_xlim(0, width)
         self.ax.set_ylim(0, height)
         self.ax.set_aspect('equal')
-        self.ax.set_title(f"Timestep: {frame_data['timestep']}", fontsize=14, fontweight='bold')
+        timestep = frame_data.get('timestep', frame_data.get('frame', 0))
+        self.ax.set_title(f"Timestep: {timestep}", fontsize=14, fontweight='bold')
         self.ax.set_xlabel('X')
         self.ax.set_ylabel('Y')
         
@@ -171,7 +172,7 @@ class Visualizer:
         """
         fig, axes = plt.subplots(2, 2, figsize=(14, 10))
         
-        timesteps = [frame['timestep'] for frame in history]
+        timesteps = [frame.get('timestep', frame.get('frame', i)) for i, frame in enumerate(history)]
         
         # Plot 1: Active vs Evacuated count
         active_counts = []
