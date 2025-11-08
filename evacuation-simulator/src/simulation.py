@@ -134,14 +134,25 @@ class Simulation:
             # Move responder
             responder.update(self.env, self.agent_manager.evacuees)
             
-            # Check if reached current room
-            if responder.has_reached_room(self.env):
+            # Check if reached current room (only if not escorting)
+            if responder.escorting is None and responder.has_reached_room(self.env):
                 # Mark room as cleared
                 if responder.current_room_target:
                     self.room_calculator.mark_room_cleared(responder.current_room_target.room_id)
                     responder.clear_room()
                 
                 # Assign new room using TRP weights
+                next_room = self.room_calculator.get_next_room_priority(
+                    responder.get_position(),
+                    self.timestep,
+                    None
+                )
+                if next_room:
+                    responder.assign_room_task(next_room, self.env)
+            
+            # If finished escorting, return to room clearing
+            elif responder.escorting is None and responder.current_room_target is None and len(responder.current_path) == 0:
+                # Assign new room
                 next_room = self.room_calculator.get_next_room_priority(
                     responder.get_position(),
                     self.timestep,
@@ -206,26 +217,33 @@ class Simulation:
         self.history.append(frame_data)
     
     def _check_termination(self):
-        """Check if simulation should terminate (TRP: all rooms cleared)"""
+        """Check if simulation should terminate (TRP: all rooms cleared OR time limit)"""
         # Terminate if max timesteps reached
         if self.timestep >= self.config.max_timesteps:
             self.running = False
             return
         
-        # Terminate if all rooms have been cleared (sweep complete)
+        # Terminate ONLY if ALL rooms cleared (not just accessible ones)
+        # Rooms may become accessible again as hazards evolve
         uncleared_rooms = self.room_calculator.get_uncleared_rooms()
+        
+        if len(uncleared_rooms) == 0:
+            # All rooms cleared - mission complete
+            self.running = False
+            return
+        
+        # Check if responders are making progress
+        # If no accessible uncleared rooms AND no responders moving for 50 steps, terminate
         accessible_uncleared = [r for r in uncleared_rooms if r.is_accessible]
-        
-        if len(accessible_uncleared) == 0:
-            # All accessible rooms cleared - mission complete
-            self.running = False
-            return
-        
-        # Terminate if all evacuees found (optional early termination)
-        unfound_evacuees = self.agent_manager.count_active_evacuees()
-        if unfound_evacuees == 0 and len(uncleared_rooms) == 0:
-            self.running = False
-            return
+        if len(accessible_uncleared) == 0 and self.timestep > 50:
+            # Check if any responder has a path
+            has_active_responder = any(
+                len(r.current_path) > 0 for r in self.agent_manager.responders if r.active
+            )
+            if not has_active_responder:
+                # No accessible rooms and responders are stuck
+                self.running = False
+                return
     
     def run(self, max_steps: Optional[int] = None):
         """
@@ -262,6 +280,7 @@ class Simulation:
         print(f"\nSimulation complete at timestep {self.timestep}")
         print(f"Rooms cleared: {self.metrics['rooms_cleared']}/{self.metrics['total_rooms']}")
         print(f"Evacuees found: {self.metrics['evacuees_found']}")
+        print(f"Evacuees evacuated: {self.metrics['evacuated_count']}")
         print(f"Unconscious: {self.metrics['unconscious_count']}")
         print(f"Sweep completion: {self.metrics['sweep_completion_rate']:.1%}")
         print(f"Total responder distance: {self.metrics['responder_distance']}")
@@ -275,6 +294,7 @@ class Simulation:
         
         self.metrics['total_time'] = self.timestep
         self.metrics['evacuees_found'] = self.agent_manager.count_rescued()
+        self.metrics['evacuated_count'] = self.agent_manager.count_evacuated()
         self.metrics['unconscious_count'] = self.agent_manager.count_unconscious()
         self.metrics['responder_distance'] = self.agent_manager.get_total_responder_distance()
         

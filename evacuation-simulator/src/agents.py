@@ -104,6 +104,8 @@ class Responder(Agent):
         self.path_history = [(x, y)]
         self.rooms_cleared = set()  # Set of cleared room IDs
         self.evacuees_found = []  # List of evacuee IDs found
+        self.escorting = None  # Evacuee currently being escorted
+        self.escort_target_exit = None  # Exit to escort to
         
     def assign_room_task(self, room_info, env: Environment):
         """
@@ -167,31 +169,77 @@ class Responder(Agent):
                 self.path_history.append((self.x, self.y))
                 self.distance_traveled += 1
                 
+                # Move escorted evacuee with responder
+                if self.escorting:
+                    self.escorting.x, self.escorting.y = self.x, self.y
+                    
+                    # Check if reached exit
+                    if env.get_state(self.x, self.y) == CellState.EXIT:
+                        # Evacuee is safe!
+                        self.escorting.evacuated = True
+                        self.escorting.active = False
+                        self.escorting = None
+                        self.escort_target_exit = None
+                        # Will return to room clearing on next update
+                
                 return True
         
         return False
     
     def _check_for_evacuees_in_room(self, evacuees: List['Evacuee'], env: Environment):
         """
-        Find evacuees in current room
-        Evacuees are static - responder searches room and finds them
+        Find evacuees in current room and start escorting to nearest exit
         """
+        # Don't look for more evacuees if already escorting
+        if self.escorting is not None:
+            return
+            
         if self.current_room_target is None:
             return
         
         # Check if responder is in target room
         current_cell = env.get_cell(self.x, self.y)
         if current_cell and current_cell.room_id == self.current_room_target.room_id:
-            # In the room, find all evacuees here
+            # In the room, find evacuees here
             for evacuee in evacuees:
                 if evacuee.active and not evacuee.found:
                     evac_cell = env.get_cell(evacuee.x, evacuee.y)
                     if evac_cell and evac_cell.room_id == self.current_room_target.room_id:
-                        # Found evacuee in this room!
+                        # Found evacuee! Start escorting to exit
                         evacuee.found = True
                         evacuee.rescued = True
                         self.evacuees_found.append(evacuee.id)
                         self.rescued_count += 1
+                        self._start_escort(evacuee, env)
+                        break  # Escort one at a time
+    
+    def _start_escort(self, evacuee: 'Evacuee', env: Environment):
+        """Start escorting evacuee to nearest exit"""
+        self.escorting = evacuee
+        
+        # Find nearest exit using A* (considering danger)
+        nearest_exit = None
+        shortest_path = None
+        min_cost = float('inf')
+        
+        for exit_pos in env.exits:
+            path = AStar.find_path(
+                env,
+                self.get_position(),
+                exit_pos,
+                can_cross_danger=True,
+                hazard_penalty=3.0  # Higher penalty when escorting
+            )
+            if path and len(path) < min_cost:
+                min_cost = len(path)
+                shortest_path = path
+                nearest_exit = exit_pos
+        
+        if nearest_exit:
+            self.escort_target_exit = nearest_exit
+            self.current_path = shortest_path
+            # Clear room target while escorting
+            self.current_room_target = None
     
     def has_reached_room(self, env: Environment) -> bool:
         """Check if responder has reached and is inside current room"""
