@@ -24,8 +24,8 @@ def create_fire_scenario():
     
     # Configure simulation
     config = SimulationConfig()
-    config.fire_spread_prob = 0.2
-    config.max_timesteps = 100
+    config.fire_spread_prob = 0.05  # MUCH slower fire (was 0.2) - gives responders more time
+    config.max_timesteps = 200
     
     sim = Simulation(env, config)
     

@@ -5,16 +5,16 @@ Quick script to visualize existing simulation results
 import json
 from src.visualize import quick_visualize
 
-# Load the fire scenario results
-print("Loading fire scenario results...")
+# Load the custom scenario results  
+print("Loading custom scenario results...")
 
-with open('outputs/frames/fire_scenario.json', 'r') as f:
+with open('outputs/frames/custom_scenario.json', 'r') as f:
     history = json.load(f)
 
 # Load metrics
 import csv
 metrics = {}
-with open('outputs/metrics/fire_scenario_metrics.csv', 'r') as f:
+with open('outputs/metrics/custom_scenario_metrics.csv', 'r') as f:
     reader = csv.reader(f)
     next(reader)  # Skip header
     for row in reader:
