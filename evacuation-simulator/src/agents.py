@@ -32,6 +32,11 @@ class Agent:
 class Evacuee(Agent):
     """Evacuee trying to reach an exit"""
     
+    # Danger level thresholds
+    DANGER_SLOW_THRESHOLD = 0.3  # Start slowing down
+    DANGER_FREEZE_THRESHOLD = 0.6  # Can't move without responder
+    DANGER_UNCONSCIOUS_THRESHOLD = 0.9  # Become unconscious
+    
     def __init__(self, x: int, y: int, speed: float = 1.0):
         super().__init__(x, y, speed)
         self.evacuated = False
@@ -40,15 +45,17 @@ class Evacuee(Agent):
         self.stuck_timer = 0
         self.path_history = [(x, y)]
         self.escorted_by = None  # Responder ID if being escorted
+        self.unconscious = False  # Can't move at all, needs carrying
         
     def update(self, env: Environment, flow_field: FlowField) -> bool:
         """
         Move evacuee toward exit using flow field
+        Responds to danger levels
         
         Returns:
             True if moved, False otherwise
         """
-        if not self.active or self.evacuated:
+        if not self.active or self.evacuated or self.unconscious:
             return False
         
         # Check if at exit
@@ -58,18 +65,33 @@ class Evacuee(Agent):
             self.active = False
             return False
         
-        # Check if in danger and not escorted
-        if state == CellState.DANGER and self.escorted_by is None:
-            # Evacuee tries to avoid danger
+        # Check danger level at current position
+        danger_level = env.get_danger_level(self.x, self.y)
+        
+        # Become unconscious if danger too high
+        if danger_level >= self.DANGER_UNCONSCIOUS_THRESHOLD:
+            self.unconscious = True
+            self.stuck = True
+            return False
+        
+        # Can't move if danger too high and not escorted
+        if danger_level >= self.DANGER_FREEZE_THRESHOLD and self.escorted_by is None:
             self.stuck_timer += 1
             if self.stuck_timer > 10:
                 self.stuck = True
             return False
         
-        # Determine effective speed
+        # Determine effective speed (reduced by danger level)
         effective_speed = self.speed
+        
+        # Slow down in moderate danger
+        if danger_level >= self.DANGER_SLOW_THRESHOLD:
+            danger_penalty = (danger_level - self.DANGER_SLOW_THRESHOLD) / (1.0 - self.DANGER_SLOW_THRESHOLD)
+            effective_speed *= (1.0 - 0.5 * danger_penalty)  # Up to 50% slower
+        
+        # Even slower when escorted
         if self.escorted_by is not None:
-            effective_speed *= 0.5  # Slower when escorted
+            effective_speed *= 0.5
         
         # Accumulate movement
         self.movement_accumulator += effective_speed
@@ -81,6 +103,15 @@ class Evacuee(Agent):
             next_pos = flow_field.get_best_direction(self.x, self.y)
             
             if next_pos:
+                # Check if next position is too dangerous
+                next_danger = env.get_danger_level(next_pos[0], next_pos[1])
+                if next_danger >= self.DANGER_FREEZE_THRESHOLD and self.escorted_by is None:
+                    # Too dangerous to enter
+                    self.stuck_timer += 1
+                    if self.stuck_timer > 10:
+                        self.stuck = True
+                    return False
+                
                 self.x, self.y = next_pos
                 self.path_history.append((self.x, self.y))
                 self.stuck_timer = 0
@@ -94,12 +125,12 @@ class Evacuee(Agent):
     
     def can_move(self, env: Environment) -> bool:
         """Check if evacuee can currently move"""
-        if not self.active or self.evacuated:
+        if not self.active or self.evacuated or self.unconscious:
             return False
         
-        # Can't move if in danger and not escorted
-        state = env.get_state(self.x, self.y)
-        if state == CellState.DANGER and self.escorted_by is None:
+        # Can't move if danger too high and not escorted
+        danger_level = env.get_danger_level(self.x, self.y)
+        if danger_level >= self.DANGER_FREEZE_THRESHOLD and self.escorted_by is None:
             return False
         
         return True
@@ -107,6 +138,10 @@ class Evacuee(Agent):
 
 class Responder(Agent):
     """Emergency responder sweeping building and rescuing evacuees"""
+    
+    # Danger level thresholds (responders are more resistant)
+    DANGER_SLOW_THRESHOLD = 0.5  # Start slowing down
+    DANGER_LIMIT_THRESHOLD = 0.95  # Can't enter even with equipment
     
     def __init__(self, x: int, y: int, speed: float = 1.0):
         super().__init__(x, y, speed)
@@ -132,6 +167,7 @@ class Responder(Agent):
     def update(self, env: Environment, evacuees: List['Evacuee']) -> bool:
         """
         Update responder: move along path, rescue evacuees, clear rooms
+        Responders can enter danger zones but are slowed
         
         Returns:
             True if moved, False otherwise
@@ -144,14 +180,30 @@ class Responder(Agent):
         
         # Move along current path
         if self.current_path and len(self.current_path) > 1:
+            # Check danger level at current position
+            danger_level = env.get_danger_level(self.x, self.y)
+            
+            # Responders slow down in high danger
+            effective_speed = self.speed
+            if danger_level >= self.DANGER_SLOW_THRESHOLD:
+                danger_penalty = min(1.0, (danger_level - self.DANGER_SLOW_THRESHOLD) / (self.DANGER_LIMIT_THRESHOLD - self.DANGER_SLOW_THRESHOLD))
+                effective_speed *= (1.0 - 0.4 * danger_penalty)  # Up to 40% slower
+            
             # Accumulate movement
-            self.movement_accumulator += self.speed
+            self.movement_accumulator += effective_speed
             
             if self.movement_accumulator >= 1.0:
                 self.movement_accumulator -= 1.0
                 
-                # Move to next waypoint
+                # Check if next position is too dangerous
                 next_pos = self.current_path[1]
+                next_danger = env.get_danger_level(next_pos[0], next_pos[1])
+                
+                if next_danger >= self.DANGER_LIMIT_THRESHOLD:
+                    # Too dangerous even for responder, need to replan
+                    return False
+                
+                # Move to next waypoint
                 self.x, self.y = next_pos
                 self.current_path.pop(0)
                 self.path_history.append((self.x, self.y))
@@ -174,9 +226,15 @@ class Responder(Agent):
                 dy = abs(evacuee.y - self.y)
                 
                 if dx <= 2 and dy <= 2:
-                    # Check if evacuee is in danger or stuck
-                    evac_state = env.get_state(evacuee.x, evacuee.y)
-                    if evac_state == CellState.DANGER or evacuee.stuck:
+                    # Check if evacuee needs help
+                    evac_danger = env.get_danger_level(evacuee.x, evacuee.y)
+                    needs_rescue = (
+                        evacuee.unconscious or
+                        evacuee.stuck or
+                        evac_danger >= Evacuee.DANGER_FREEZE_THRESHOLD
+                    )
+                    
+                    if needs_rescue:
                         # Rescue evacuee
                         self._rescue_evacuee(evacuee)
     

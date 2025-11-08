@@ -9,29 +9,49 @@ from src.environment import Environment, CellState
 
 
 class Fire:
-    """Fire hazard that spreads radially"""
+    """Fire hazard that spreads radially with heat/smoke intensity"""
     
-    def __init__(self, origin: Tuple[int, int], spread_prob: float = 0.2):
+    def __init__(self, origin: Tuple[int, int], spread_prob: float = 0.2, heat_radius: int = 5):
         self.origin = origin
         self.spread_prob = spread_prob
-        self.burning_cells = {origin}
+        self.heat_radius = heat_radius
+        self.burning_cells = {origin}  # Actual flames
         
     def spread(self, env: Environment, timestep: int):
-        """Spread fire to adjacent cells"""
+        """Spread fire to adjacent cells and update heat/smoke danger levels"""
         new_burns = set()
         
+        # Spread flames to neighbors
         for x, y in list(self.burning_cells):
-            # Try to spread to neighbors
             for nx, ny in env.get_neighbors(x, y, can_cross_danger=True):
                 if (nx, ny) not in self.burning_cells:
-                    # Check if cell can burn (not wall, not exit)
                     state = env.get_state(nx, ny)
                     if state not in [CellState.WALL, CellState.EXIT]:
                         if random.random() < self.spread_prob:
                             new_burns.add((nx, ny))
-                            env.mark_danger(nx, ny, 'fire', timestep)
         
         self.burning_cells.update(new_burns)
+        
+        # Update heat/smoke danger levels for all cells based on distance from fires
+        for y in range(env.height):
+            for x in range(env.width):
+                if env.get_state(x, y) == CellState.WALL:
+                    continue
+                
+                # Calculate danger based on nearest fire
+                min_distance = float('inf')
+                for fx, fy in self.burning_cells:
+                    distance = ((x - fx)**2 + (y - fy)**2) ** 0.5
+                    min_distance = min(min_distance, distance)
+                
+                if min_distance <= self.heat_radius:
+                    # Danger falls off with distance: 1.0 at fire, ~0.2 at radius edge
+                    danger_level = max(0.0, 1.0 - (min_distance / self.heat_radius) * 0.8)
+                    cell = env.get_cell(x, y)
+                    if cell:
+                        cell.fire_intensity = danger_level
+                        env.mark_danger(x, y, 'fire', timestep, danger_level)
+        
         return new_burns
 
 
@@ -87,7 +107,7 @@ class Gas:
                     # Keep remaining concentration
                     diffused[y, x] += current_conc * (1 - self.diffusion_rate)
         
-        # Update concentrations and mark dangerous cells
+        # Update concentrations and danger levels
         affected_cells = []
         for y in range(env.height):
             for x in range(env.width):
@@ -95,11 +115,11 @@ class Gas:
                 if cell and env.get_state(x, y) != CellState.WALL:
                     cell.gas_concentration = diffused[y, x]
                     
-                    # Mark as dangerous if above threshold
-                    if cell.gas_concentration >= self.faint_threshold:
-                        if cell.state not in [CellState.WALL, CellState.EXIT]:
-                            env.mark_danger(x, y, 'gas', timestep)
-                            affected_cells.append((x, y))
+                    # Danger level equals gas concentration (already 0-1)
+                    danger_level = cell.gas_concentration
+                    if danger_level > 0.1:  # Only mark if significant
+                        env.mark_danger(x, y, 'gas', timestep, danger_level)
+                        affected_cells.append((x, y))
         
         return affected_cells
 
@@ -127,11 +147,8 @@ class Shooter:
              timestep: int):
         """
         Move shooter based on random walk biased toward visible evacuees
+        Updates danger gradient based on proximity
         """
-        # Mark current position as threatened
-        self.cells_threatened.add((self.x, self.y))
-        env.mark_danger(self.x, self.y, 'shooter', timestep)
-        
         # Check for visible evacuees
         visible_evacuees = []
         for ex, ey in evacuee_positions:
@@ -146,11 +163,8 @@ class Shooter:
         
         # If evacuees visible, move toward closest one
         if visible_evacuees:
-            # Find closest evacuee
             closest = min(visible_evacuees, 
                          key=lambda e: (e[0] - self.x)**2 + (e[1] - self.y)**2)
-            
-            # Move toward closest evacuee
             best_move = min(neighbors, 
                            key=lambda n: (n[0] - closest[0])**2 + (n[1] - closest[1])**2)
             self.x, self.y = best_move
@@ -158,21 +172,29 @@ class Shooter:
             # Random walk
             self.x, self.y = random.choice(neighbors)
         
-        # Mark new position
-        env.mark_danger(self.x, self.y, 'shooter', timestep)
-        self.cells_threatened.add((self.x, self.y))
         self.path_history.append((self.x, self.y))
         
-        # Mark area around shooter as threatened (vision radius)
-        for dx in range(-self.vision_radius, self.vision_radius + 1):
-            for dy in range(-self.vision_radius, self.vision_radius + 1):
+        # Update danger gradient around shooter
+        for dy in range(-self.vision_radius, self.vision_radius + 1):
+            for dx in range(-self.vision_radius, self.vision_radius + 1):
                 tx, ty = self.x + dx, self.y + dy
                 if 0 <= tx < env.width and 0 <= ty < env.height:
                     state = env.get_state(tx, ty)
                     if state not in [CellState.WALL, CellState.EXIT]:
                         distance = (dx*dx + dy*dy) ** 0.5
                         if distance <= self.vision_radius:
-                            env.mark_danger(tx, ty, 'shooter', timestep)
+                            # Danger gradient: 1.0 at shooter, falls off with distance
+                            # 1.0 at position, 0.8 nearby, 0.4-0.6 within sight
+                            if distance == 0:
+                                danger_level = 1.0
+                            elif distance <= 2:
+                                danger_level = 0.9
+                            elif distance <= 4:
+                                danger_level = 0.7
+                            else:
+                                danger_level = 0.4 + 0.3 * (1.0 - distance / self.vision_radius)
+                            
+                            env.mark_danger(tx, ty, 'shooter', timestep, danger_level)
                             self.cells_threatened.add((tx, ty))
 
 

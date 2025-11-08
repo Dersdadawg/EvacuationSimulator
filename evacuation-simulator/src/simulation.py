@@ -2,6 +2,7 @@
 Simulation module: Main simulation controller
 """
 
+import numpy as np
 from typing import Dict, List, Tuple, Optional
 from src.environment import Environment
 from src.agents import AgentManager, Evacuee, Responder
@@ -148,6 +149,14 @@ class Simulation:
     
     def _record_frame(self):
         """Record current state for export"""
+        # Create danger level heatmap
+        danger_heatmap = np.zeros((self.env.height, self.env.width))
+        for y in range(self.env.height):
+            for x in range(self.env.width):
+                cell = self.env.get_cell(x, y)
+                if cell:
+                    danger_heatmap[y, x] = cell.danger_level
+        
         frame_data = {
             'timestep': self.timestep,
             'responders': [
@@ -169,11 +178,13 @@ class Simulation:
                     'evacuated': e.evacuated,
                     'rescued': e.rescued,
                     'stuck': e.stuck,
+                    'unconscious': e.unconscious,
                 }
                 for e in self.agent_manager.evacuees
             ],
             'danger_cells': self.env.get_danger_cells(),
             'grid': self.env.grid.copy(),
+            'danger_heatmap': danger_heatmap,
         }
         
         self.history.append(frame_data)

@@ -24,10 +24,12 @@ class Cell:
         self.x = x
         self.y = y
         self.state = state
+        self.danger_level = 0.0  # Continuous danger value 0.0 (safe) to 1.0 (lethal)
         self.danger_time = None  # Timestep when cell became dangerous
         self.hazard_type = None  # 'fire', 'gas', or 'shooter'
         self.room_id = None
         self.gas_concentration = 0.0
+        self.fire_intensity = 0.0  # 0.0 to 1.0 for fire heat/smoke
         self.is_cleared = False  # For responder sweep tracking
         
     def __repr__(self):
@@ -95,13 +97,36 @@ class Environment:
                     neighbors.append((nx, ny))
         return neighbors
     
-    def mark_danger(self, x: int, y: int, hazard_type: str, timestep: int):
-        """Mark cell as dangerous"""
+    def mark_danger(self, x: int, y: int, hazard_type: str, timestep: int, danger_level: float = 1.0):
+        """Mark cell as dangerous with specified danger level (0.0-1.0)"""
         cell = self.get_cell(x, y)
         if cell and cell.state != CellState.WALL and cell.state != CellState.EXIT:
-            self.set_cell(x, y, CellState.DANGER)
-            cell.danger_time = timestep
+            # Update danger level (take maximum if multiple hazards)
+            cell.danger_level = max(cell.danger_level, danger_level)
+            
+            # Mark as danger state if above threshold
+            if cell.danger_level > 0.3:
+                self.set_cell(x, y, CellState.DANGER)
+            
+            if cell.danger_time is None:
+                cell.danger_time = timestep
             cell.hazard_type = hazard_type
+    
+    def set_danger_level(self, x: int, y: int, danger_level: float):
+        """Set danger level for a cell (0.0-1.0)"""
+        cell = self.get_cell(x, y)
+        if cell:
+            cell.danger_level = max(0.0, min(1.0, danger_level))
+            # Update grid state based on danger level
+            if cell.danger_level > 0.3 and cell.state not in [CellState.WALL, CellState.EXIT]:
+                self.set_cell(x, y, CellState.DANGER)
+            elif cell.danger_level <= 0.3 and cell.state == CellState.DANGER:
+                self.set_cell(x, y, CellState.SAFE)
+    
+    def get_danger_level(self, x: int, y: int) -> float:
+        """Get danger level at position"""
+        cell = self.get_cell(x, y)
+        return cell.danger_level if cell else 0.0
     
     def add_exit(self, x: int, y: int):
         """Add an exit"""
@@ -173,10 +198,12 @@ class Environment:
                 old_cell = self.cells[y][x]
                 new_cell = new_env.cells[y][x]
                 new_cell.state = old_cell.state
+                new_cell.danger_level = old_cell.danger_level
                 new_cell.danger_time = old_cell.danger_time
                 new_cell.hazard_type = old_cell.hazard_type
                 new_cell.room_id = old_cell.room_id
                 new_cell.gas_concentration = old_cell.gas_concentration
+                new_cell.fire_intensity = old_cell.fire_intensity
                 new_cell.is_cleared = old_cell.is_cleared
         return new_env
 

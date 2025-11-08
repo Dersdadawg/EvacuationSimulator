@@ -5,6 +5,7 @@ Visualize module: Matplotlib-based visualization for debugging
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import matplotlib.animation as animation
+import matplotlib.colors as mcolors
 import numpy as np
 from typing import List, Dict
 from src.environment import CellState
@@ -28,13 +29,17 @@ class Visualizer:
     def __init__(self, figsize=(12, 10)):
         self.fig, self.ax = plt.subplots(figsize=figsize)
         self.cell_size = 1.0
+        # Create colormap for danger heatmap (white -> yellow -> orange -> red)
+        self.danger_cmap = mcolors.LinearSegmentedColormap.from_list(
+            'danger', ['#FFFFFF', '#FFFF99', '#FFCC00', '#FF9900', '#FF0000']
+        )
     
     def draw_frame(self, frame_data: Dict, show_paths: bool = False):
         """
-        Draw a single frame
+        Draw a single frame with danger heatmap
         
         Args:
-            frame_data: Frame dictionary with grid, agents, etc.
+            frame_data: Frame dictionary with grid, agents, danger_heatmap, etc.
             show_paths: Whether to show agent path trails
         """
         self.ax.clear()
@@ -42,11 +47,29 @@ class Visualizer:
         grid = np.array(frame_data['grid'])
         height, width = grid.shape
         
-        # Draw grid cells
+        # Get danger heatmap if available
+        danger_heatmap = frame_data.get('danger_heatmap')
+        if danger_heatmap is not None:
+            danger_heatmap = np.array(danger_heatmap)
+        
+        # Draw grid cells with danger heatmap
         for y in range(height):
             for x in range(width):
                 cell_state = CellState(grid[y, x])
-                color = self.COLORS.get(cell_state, '#CCCCCC')
+                
+                # Determine cell color based on state and danger level
+                if cell_state == CellState.WALL:
+                    color = self.COLORS[CellState.WALL]
+                elif cell_state == CellState.EXIT:
+                    color = self.COLORS[CellState.EXIT]
+                else:
+                    # Use danger heatmap if available
+                    if danger_heatmap is not None:
+                        danger_level = danger_heatmap[y, x]
+                        color = self.danger_cmap(danger_level)
+                    else:
+                        # Fallback to binary coloring
+                        color = self.COLORS.get(cell_state, '#FFFFFF')
                 
                 rect = patches.Rectangle(
                     (x, height - y - 1), 1, 1,
