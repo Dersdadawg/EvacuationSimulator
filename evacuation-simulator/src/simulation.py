@@ -136,19 +136,21 @@ class Simulation:
             
             # Check if reached current room (only if not escorting)
             if responder.escorting is None and responder.has_reached_room(self.env):
-                # Mark room as cleared
-                if responder.current_room_target:
-                    self.room_calculator.mark_room_cleared(responder.current_room_target.room_id)
-                    responder.clear_room()
-                
-                # Assign new room using TRP weights
-                next_room = self.room_calculator.get_next_room_priority(
-                    responder.get_position(),
-                    self.timestep,
-                    None
-                )
-                if next_room:
-                    responder.assign_room_task(next_room, self.env)
+                # Only clear room after searching long enough
+                if responder.has_searched_room_enough():
+                    # Mark room as cleared
+                    if responder.current_room_target:
+                        self.room_calculator.mark_room_cleared(responder.current_room_target.room_id)
+                        responder.clear_room()
+                    
+                    # Assign new room using TRP weights
+                    next_room = self.room_calculator.get_next_room_priority(
+                        responder.get_position(),
+                        self.timestep,
+                        None
+                    )
+                    if next_room:
+                        responder.assign_room_task(next_room, self.env)
             
             # If finished escorting, return to room clearing
             elif responder.escorting is None and responder.current_room_target is None and len(responder.current_path) == 0:

@@ -25,7 +25,7 @@ def create_fire_scenario():
     # Configure simulation
     config = SimulationConfig()
     config.fire_spread_prob = 0.2
-    config.max_timesteps = 500
+    config.max_timesteps = 100
     
     sim = Simulation(env, config)
     
@@ -36,7 +36,7 @@ def create_fire_scenario():
     sim.add_responders([(5, 25), (45, 25)])
     
     # Add fire hazard
-    fire_origin = (15, 20)  # Fire starts in one of the rooms
+    fire_origin = (29, 25)  # Fire starts in one of the rooms
     sim.add_fire_hazard(fire_origin)
     
     return sim
@@ -122,19 +122,19 @@ def create_custom_scenario():
     
     # Configure simulation
     config = SimulationConfig()
-    config.fire_spread_prob = 0.25
-    config.max_timesteps = 300
+    config.fire_spread_prob = 0.1  # Slower fire spread
+    config.max_timesteps = 1000
     
     sim = Simulation(env, config)
     
-    # Add evacuees
-    sim.add_evacuees([(15, 15), (12, 12), (18, 18)])
+    # Add evacuees INSIDE the room
+    sim.add_evacuees([(15, 15)])  # Just one for testing
     
-    # Add responders
-    sim.add_responders([(15, 5)])
+    # Add responders OUTSIDE near door
+    sim.add_responders([(15, 21)])  # Right outside door
     
-    # Add fire
-    sim.add_fire_hazard((15, 25))
+    # Add fire FAR from door
+    sim.add_fire_hazard((10, 25))
     
     return sim
 

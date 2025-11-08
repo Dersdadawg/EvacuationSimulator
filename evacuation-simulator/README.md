@@ -19,13 +19,13 @@ A grid-based simulation modeling emergency responders sweeping buildings to resc
 ### Installation
 
 ```bash
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 ```
 
 ### Run Simulation
 
 ```bash
-python main.py --scenario fire --layout office
+python3 main.py --scenario fire --layout office
 ```
 
 ### Generate Blender Visualization

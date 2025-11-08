@@ -106,6 +106,7 @@ class Responder(Agent):
         self.evacuees_found = []  # List of evacuee IDs found
         self.escorting = None  # Evacuee currently being escorted
         self.escort_target_exit = None  # Exit to escort to
+        self.room_search_time = 0  # Time spent searching current room
         
     def assign_room_task(self, room_info, env: Environment):
         """
@@ -116,6 +117,7 @@ class Responder(Agent):
             env: Environment
         """
         self.current_room_target = room_info
+        self.room_search_time = 0  # Reset search time for new room
         self.current_path = AStar.find_path(
             env, 
             self.get_position(), 
@@ -244,13 +246,20 @@ class Responder(Agent):
     def has_reached_room(self, env: Environment) -> bool:
         """Check if responder has reached and is inside current room"""
         if self.current_room_target is None:
-            return True
+            return False  # No room assigned, so not reached
         
         current_cell = env.get_cell(self.x, self.y)
         if current_cell and current_cell.room_id == self.current_room_target.room_id:
+            # In the room, increment search time
+            self.room_search_time += 1
             return True
         
         return False
+    
+    def has_searched_room_enough(self) -> bool:
+        """Check if responder has searched room long enough"""
+        # Need to search for at least 3 timesteps to find evacuees
+        return self.room_search_time >= 3
     
     def clear_room(self):
         """Mark current room as cleared"""
