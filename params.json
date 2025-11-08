@@ -1,0 +1,52 @@
+{
+  "simulation": {
+    "time_cap": 600,
+    "tick_duration": 1.0,
+    "random_seed": 42
+  },
+  "agents": {
+    "count": 2,
+    "speed_hall": 1.5,
+    "speed_stairs": 0.8,
+    "speed_drag": 0.6,
+    "service_time_base": 5.0,
+    "sensing_range": 50.0
+  },
+  "hazard": {
+    "enabled": true,
+    "initial_level": 0.0,
+    "spread_rate": 0.02,
+    "stair_up_bias": 1.5,
+    "diffusion_coefficient": 0.1
+  },
+  "latency": {
+    "enabled": false,
+    "comm_delay_mean": 1.0,
+    "comm_delay_std": 0.5,
+    "sensing_delay_mean": 0.5,
+    "sensing_delay_std": 0.2
+  },
+  "policy": {
+    "epsilon": 0.1,
+    "area_weight": 1.0,
+    "evacuee_weight": 1.0,
+    "distance_weight": 1.0
+  },
+  "visualization": {
+    "enabled": true,
+    "fps_target": 30,
+    "window_width": 1600,
+    "window_height": 900,
+    "grid_cell_size": 20,
+    "agent_trail_length": 20,
+    "event_fade_duration": 2.0,
+    "heatmap_opacity": 0.6
+  },
+  "output": {
+    "save_video": true,
+    "save_charts": true,
+    "video_fps": 30,
+    "chart_dpi": 150
+  }
+}
+
