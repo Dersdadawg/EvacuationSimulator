@@ -30,114 +30,66 @@ class Agent:
 
 
 class Evacuee(Agent):
-    """Evacuee trying to reach an exit"""
+    """
+    Evacuee - STATIC in this model
+    Evacuees don't move; they wait in rooms to be found/rescued by responders
+    """
     
     # Danger level thresholds
-    DANGER_SLOW_THRESHOLD = 0.3  # Start slowing down
-    DANGER_FREEZE_THRESHOLD = 0.6  # Can't move without responder
-    DANGER_UNCONSCIOUS_THRESHOLD = 0.9  # Become unconscious
+    DANGER_UNCONSCIOUS_THRESHOLD = 0.9  # Become unconscious from exposure
     
     def __init__(self, x: int, y: int, speed: float = 1.0):
         super().__init__(x, y, speed)
         self.evacuated = False
-        self.rescued = False
-        self.stuck = False
-        self.stuck_timer = 0
-        self.path_history = [(x, y)]
-        self.escorted_by = None  # Responder ID if being escorted
-        self.unconscious = False  # Can't move at all, needs carrying
+        self.rescued = False  # Found by responder
+        self.unconscious = False  # High danger exposure
+        self.room_id = None  # Which room they're in
+        self.found = False  # Discovered by responder
+        self.danger_exposure_time = 0  # Time spent in high danger
         
-    def update(self, env: Environment, flow_field: FlowField) -> bool:
+    def update(self, env: Environment, flow_field: FlowField = None) -> bool:
         """
-        Move evacuee toward exit using flow field
-        Responds to danger levels
+        Evacuees are STATIC - they don't move
+        They only track danger exposure and may become unconscious
         
         Returns:
-            True if moved, False otherwise
+            False (evacuees don't move)
         """
-        if not self.active or self.evacuated or self.unconscious:
-            return False
-        
-        # Check if at exit
-        state = env.get_state(self.x, self.y)
-        if state == CellState.EXIT:
-            self.evacuated = True
-            self.active = False
+        if not self.active or self.evacuated or self.found:
             return False
         
         # Check danger level at current position
         danger_level = env.get_danger_level(self.x, self.y)
         
-        # Become unconscious if danger too high
+        # Track danger exposure
+        if danger_level >= 0.6:
+            self.danger_exposure_time += 1
+        
+        # Become unconscious if exposed to high danger too long
         if danger_level >= self.DANGER_UNCONSCIOUS_THRESHOLD:
+            self.danger_exposure_time += 2  # High danger counts double
+        
+        if self.danger_exposure_time > 20:  # 20 timesteps in danger
             self.unconscious = True
-            self.stuck = True
-            return False
         
-        # Can't move if danger too high and not escorted
-        if danger_level >= self.DANGER_FREEZE_THRESHOLD and self.escorted_by is None:
-            self.stuck_timer += 1
-            if self.stuck_timer > 10:
-                self.stuck = True
-            return False
-        
-        # Determine effective speed (reduced by danger level)
-        effective_speed = self.speed
-        
-        # Slow down in moderate danger
-        if danger_level >= self.DANGER_SLOW_THRESHOLD:
-            danger_penalty = (danger_level - self.DANGER_SLOW_THRESHOLD) / (1.0 - self.DANGER_SLOW_THRESHOLD)
-            effective_speed *= (1.0 - 0.5 * danger_penalty)  # Up to 50% slower
-        
-        # Even slower when escorted
-        if self.escorted_by is not None:
-            effective_speed *= 0.5
-        
-        # Accumulate movement
-        self.movement_accumulator += effective_speed
-        
-        if self.movement_accumulator >= 1.0:
-            self.movement_accumulator -= 1.0
-            
-            # Get next position from flow field
-            next_pos = flow_field.get_best_direction(self.x, self.y)
-            
-            if next_pos:
-                # Check if next position is too dangerous
-                next_danger = env.get_danger_level(next_pos[0], next_pos[1])
-                if next_danger >= self.DANGER_FREEZE_THRESHOLD and self.escorted_by is None:
-                    # Too dangerous to enter
-                    self.stuck_timer += 1
-                    if self.stuck_timer > 10:
-                        self.stuck = True
-                    return False
-                
-                self.x, self.y = next_pos
-                self.path_history.append((self.x, self.y))
-                self.stuck_timer = 0
-                return True
-            else:
-                self.stuck_timer += 1
-                if self.stuck_timer > 10:
-                    self.stuck = True
-        
-        return False
+        return False  # Evacuees are static
     
     def can_move(self, env: Environment) -> bool:
-        """Check if evacuee can currently move"""
-        if not self.active or self.evacuated or self.unconscious:
-            return False
-        
-        # Can't move if danger too high and not escorted
-        danger_level = env.get_danger_level(self.x, self.y)
-        if danger_level >= self.DANGER_FREEZE_THRESHOLD and self.escorted_by is None:
-            return False
-        
-        return True
+        """Evacuees are static - always returns False"""
+        return False
 
 
 class Responder(Agent):
-    """Emergency responder sweeping building and rescuing evacuees"""
+    """
+    Emergency responder using Traveling Repairman Problem optimization
+    Visits rooms based on priority weights calculated from:
+    - Expected occupancy
+    - Danger level
+    - Time to untenability
+    - Information/reports
+    - Accessibility
+    - Travel time
+    """
     
     # Danger level thresholds (responders are more resistant)
     DANGER_SLOW_THRESHOLD = 0.5  # Start slowing down
@@ -146,23 +98,29 @@ class Responder(Agent):
     def __init__(self, x: int, y: int, speed: float = 1.0):
         super().__init__(x, y, speed)
         self.current_path = []
-        self.current_task = None  # Target position for current sweep task
+        self.current_room_target = None  # Current room being cleared
         self.rescued_count = 0
         self.distance_traveled = 0
         self.path_history = [(x, y)]
-        self.escorting = None  # Evacuee being escorted
+        self.rooms_cleared = set()  # Set of cleared room IDs
+        self.evacuees_found = []  # List of evacuee IDs found
         
-    def assign_task(self, target: Tuple[int, int], env: Environment):
+    def assign_room_task(self, room_info, env: Environment):
         """
-        Assign a sweep task (room to clear)
+        Assign a room to clear (TRP optimization)
         
         Args:
-            target: Target position to reach
+            room_info: RoomInfo object with priority weight
             env: Environment
         """
-        self.current_task = target
-        self.current_path = AStar.find_path(env, self.get_position(), target, 
-                                           can_cross_danger=True, hazard_penalty=2.0)
+        self.current_room_target = room_info
+        self.current_path = AStar.find_path(
+            env, 
+            self.get_position(), 
+            room_info.center,
+            can_cross_danger=True, 
+            hazard_penalty=2.0
+        )
         
     def update(self, env: Environment, evacuees: List['Evacuee']) -> bool:
         """
@@ -175,8 +133,8 @@ class Responder(Agent):
         if not self.active:
             return False
         
-        # Check for nearby evacuees to rescue
-        self._check_for_rescues(evacuees, env)
+        # Check for evacuees in current room
+        self._check_for_evacuees_in_room(evacuees, env)
         
         # Move along current path
         if self.current_path and len(self.current_path) > 1:
@@ -209,71 +167,62 @@ class Responder(Agent):
                 self.path_history.append((self.x, self.y))
                 self.distance_traveled += 1
                 
-                # Update escorted evacuee position
-                if self.escorting:
-                    self.escorting.x, self.escorting.y = self.x, self.y
-                
                 return True
         
         return False
     
-    def _check_for_rescues(self, evacuees: List['Evacuee'], env: Environment):
-        """Check for evacuees in danger nearby and rescue them"""
-        for evacuee in evacuees:
-            if evacuee.active and not evacuee.evacuated and not evacuee.rescued:
-                # Check if evacuee is nearby (within 2 cells)
-                dx = abs(evacuee.x - self.x)
-                dy = abs(evacuee.y - self.y)
-                
-                if dx <= 2 and dy <= 2:
-                    # Check if evacuee needs help
-                    evac_danger = env.get_danger_level(evacuee.x, evacuee.y)
-                    needs_rescue = (
-                        evacuee.unconscious or
-                        evacuee.stuck or
-                        evac_danger >= Evacuee.DANGER_FREEZE_THRESHOLD
-                    )
-                    
-                    if needs_rescue:
-                        # Rescue evacuee
-                        self._rescue_evacuee(evacuee)
+    def _check_for_evacuees_in_room(self, evacuees: List['Evacuee'], env: Environment):
+        """
+        Find evacuees in current room
+        Evacuees are static - responder searches room and finds them
+        """
+        if self.current_room_target is None:
+            return
+        
+        # Check if responder is in target room
+        current_cell = env.get_cell(self.x, self.y)
+        if current_cell and current_cell.room_id == self.current_room_target.room_id:
+            # In the room, find all evacuees here
+            for evacuee in evacuees:
+                if evacuee.active and not evacuee.found:
+                    evac_cell = env.get_cell(evacuee.x, evacuee.y)
+                    if evac_cell and evac_cell.room_id == self.current_room_target.room_id:
+                        # Found evacuee in this room!
+                        evacuee.found = True
+                        evacuee.rescued = True
+                        self.evacuees_found.append(evacuee.id)
+                        self.rescued_count += 1
     
-    def _rescue_evacuee(self, evacuee: 'Evacuee'):
-        """Start escorting an evacuee"""
-        if self.escorting is None:  # Can only escort one at a time
-            evacuee.rescued = True
-            evacuee.escorted_by = self.id
-            self.escorting = evacuee
-            self.rescued_count += 1
-    
-    def has_reached_task(self) -> bool:
-        """Check if responder has reached current task location"""
-        if self.current_task is None:
+    def has_reached_room(self, env: Environment) -> bool:
+        """Check if responder has reached and is inside current room"""
+        if self.current_room_target is None:
             return True
         
-        dx = abs(self.x - self.current_task[0])
-        dy = abs(self.y - self.current_task[1])
+        current_cell = env.get_cell(self.x, self.y)
+        if current_cell and current_cell.room_id == self.current_room_target.room_id:
+            return True
         
-        return dx <= 1 and dy <= 1
+        return False
     
-    def clear_task(self):
-        """Clear current task"""
-        self.current_task = None
+    def clear_room(self):
+        """Mark current room as cleared"""
+        if self.current_room_target:
+            self.rooms_cleared.add(self.current_room_target.room_id)
+            self.current_room_target = None
         self.current_path = []
     
     def replan_path(self, env: Environment):
-        """Replan path to current task (if hazards have changed)"""
-        if self.current_task:
-            new_path = AStar.find_path(env, self.get_position(), self.current_task,
-                                      can_cross_danger=True, hazard_penalty=2.0)
+        """Replan path to current room (if hazards have changed)"""
+        if self.current_room_target:
+            new_path = AStar.find_path(
+                env, 
+                self.get_position(), 
+                self.current_room_target.center,
+                can_cross_danger=True, 
+                hazard_penalty=2.0
+            )
             if new_path:
                 self.current_path = new_path
-    
-    def release_evacuee(self):
-        """Release escorted evacuee (when near exit)"""
-        if self.escorting:
-            self.escorting.escorted_by = None
-            self.escorting = None
 
 
 class AgentManager:
@@ -308,16 +257,16 @@ class AgentManager:
         return sum(1 for e in self.evacuees if e.evacuated)
     
     def count_rescued(self) -> int:
-        """Count evacuees rescued by responders"""
-        return sum(1 for e in self.evacuees if e.rescued)
+        """Count evacuees found/rescued by responders"""
+        return sum(1 for e in self.evacuees if e.found or e.rescued)
     
     def count_active_evacuees(self) -> int:
-        """Count evacuees still trying to evacuate"""
-        return sum(1 for e in self.evacuees if e.active and not e.evacuated)
+        """Count evacuees not yet found (static model)"""
+        return sum(1 for e in self.evacuees if e.active and not e.found)
     
-    def count_stuck(self) -> int:
-        """Count stuck evacuees"""
-        return sum(1 for e in self.evacuees if e.stuck)
+    def count_unconscious(self) -> int:
+        """Count evacuees who became unconscious"""
+        return sum(1 for e in self.evacuees if e.unconscious)
     
     def get_total_responder_distance(self) -> int:
         """Get total distance traveled by all responders"""
