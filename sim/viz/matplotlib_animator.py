@@ -765,10 +765,14 @@ class MatplotlibAnimator:
             f"Controls: SPACE=Play/Pause  |  J/L=Speed  |  ESC=Quit"
         )
         
-        if self.sim.complete:
-            # Show end screen with full statistics
-            self._show_end_screen(results)
-            self.paused = True
+        # Only show end screen when PAUSED (not automatically)
+        if self.paused:
+            if self.sim.complete:
+                # Show end screen only when paused
+                self._show_end_screen(results)
+            elif hasattr(self, '_end_screen_shown'):
+                # Hide end screen when resuming
+                self._hide_end_screen()
         
         self.info_text.set_text(info)
         
@@ -875,6 +879,25 @@ class MatplotlibAnimator:
         self.info_text.set_color(title_color)
         self.info_text.set_fontweight('600')
         self.info_text.set_zorder(1000)  # On top of everything!
+    
+    def _hide_end_screen(self):
+        """Hide end screen and restore visualization"""
+        if hasattr(self, '_end_screen_shown'):
+            delattr(self, '_end_screen_shown')
+            
+            # Restore full opacity to all patches
+            for patch in self.room_patches.values():
+                patch.set_alpha(0.2)
+            for patch in self.cell_heatmap_patches:
+                patch.set_alpha(1.0)
+            if hasattr(self, 'wall_renderer'):
+                for patch in self.wall_renderer.wall_patches:
+                    patch.set_alpha(1.0)
+            
+            # Restore info text styling
+            self.info_text.set_color(self.COLORS['text_dark'])
+            self.info_text.set_fontweight('normal')
+            self.info_text.set_zorder(100)
     
     def run(self):
         """Start the animation"""

@@ -102,7 +102,6 @@ class DecisionEngine:
                         if door_cell_key in self.env.hazard_system.cells:
                             door_cell = self.env.hazard_system.cells[door_cell_key]
                             if door_cell.is_burning or door_cell.danger_level > 0.85:
-                                print(f"[PRIORITY] Room {room_id} door BLOCKED! Cell {door_cell_key} burning={door_cell.is_burning}, danger={door_cell.danger_level:.2f}")
                                 return 0.0  # Door blocked by fire!
         
         # D_i(t): Average danger level [0, 1]
