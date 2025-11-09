@@ -55,15 +55,15 @@ class MatplotlibAnimator:
         self.fig = plt.figure(figsize=(22, 13), facecolor=self.COLORS['bg'])
         
         # Beautiful title with gradient-like effect
-        title = self.fig.suptitle('FIRE EVACUATION SIMULATION | GRID-BASED HAZARD MODEL', 
-                         fontsize=20, fontweight='600', 
+        title = self.fig.suptitle('FIRE EVACUATION SIMULATION', 
+                         fontsize=26, fontweight='700', 
                          fontfamily='sans-serif',
-                         color='#D32F2F', y=0.98,
-                         bbox=dict(boxstyle='round,pad=0.7', 
-                                  facecolor='#FFEBEE',
-                                  edgecolor='#EF5350',
-                                  linewidth=2,
-                                  alpha=0.95))
+                         color='#FFFFFF', y=0.98,
+                         bbox=dict(boxstyle='round,pad=0.8', 
+                                  facecolor='#E53935',
+                                  edgecolor='none',
+                                  linewidth=0,
+                                  alpha=1.0))
         
         # Main plot area
         self.ax = self.fig.add_subplot(111)
@@ -169,22 +169,21 @@ class MatplotlibAnimator:
         """Add fire danger colorbar legend"""
         # Create legend showing white -> red gradient (moved to top-right to avoid overlap)
         legend_text = self.ax.text(
-            0.98, 0.80, 
-            'DANGER LEVEL\n'
-            '━━━━━━━━━━━\n'
-            'RED = FIRE\n'
-            'Orange = High\n'
-            'Yellow = Moderate\n'
-            'White = Safe',
+            0.98, 0.85, 
+            'DANGER\n'
+            'Burning\n'
+            'Critical\n'
+            'Elevated\n'
+            'Safe',
             transform=self.ax.transAxes,
             ha='right', va='top',
-            fontsize=10, fontweight='600',
+            fontsize=12, fontweight='600',
             fontfamily='sans-serif',
-            color=self.COLORS['text_dark'],
-            bbox=dict(boxstyle='round,pad=0.8', 
-                     facecolor=self.COLORS['white'], 
-                     edgecolor=self.COLORS['danger'], 
-                     linewidth=2.5, alpha=0.95),
+            color='#212121',
+            bbox=dict(boxstyle='round,pad=1.0', 
+                     facecolor='#FFFFFF', 
+                     edgecolor='#BDBDBD', 
+                     linewidth=2, alpha=0.95),
             zorder=100
         )
     
@@ -219,35 +218,6 @@ class MatplotlibAnimator:
                 # Check if cell is on current floor
                 room_at_cell = self.sim.env.rooms.get(cell.room_id)
                 if not room_at_cell or room_at_cell.floor != self.current_floor:
-                    continue
-                
-                # Check if cell is in zero-priority room
-                if cell.room_id in zero_priority_rooms and not cell.is_burning:
-                    # Distinguish: GREEN if evacuated, PINK if entrance blocked
-                    room = self.sim.env.rooms[cell.room_id]
-                    if room.evacuees_remaining == 0:
-                        # LIGHT GREEN - Everyone rescued!
-                        color = '#A5D6A7'
-                        alpha = 0.6
-                    else:
-                        # BRIGHT PINK - Entrance blocked by fire, can't rescue!
-                        color = '#FF1493'  # Deep pink for maximum visibility
-                        alpha = 0.95  # Nearly opaque
-                    
-                    cell_size = self.grid_resolution
-                    rect = patches.Rectangle(
-                        (x - cell_size/2, y - cell_size/2),
-                        cell_size,
-                        cell_size,
-                        facecolor=color,
-                        edgecolor='#FF1493',  # Pink border for emphasis
-                        linewidth=1.5,
-                        alpha=alpha,
-                        zorder=12  # Higher than fire cells
-                    )
-                    self.cell_heatmap_patches.append(rect)
-                    self.ax.add_patch(rect)
-                    drawn_count += 1
                     continue
                 
                 # WHITE -> RED COLORMAP with SHADERS
@@ -339,13 +309,20 @@ class MatplotlibAnimator:
             else:
                 priority = 1  # Non-offices don't get colored
             
-            if priority == 0.0 or (room.cleared and room.evacuees_remaining == 0):
-                # EVACUATED/ZERO PRIORITY ROOMS: LIGHT GREEN FILL
-                edge_color = '#2E7D32'  # Dark green
-                edge_width = 3.5
-                facecolor = '#A5D6A7'  # Light green
+            if priority == 0.0 and room.evacuees_remaining == 0:
+                # EVACUATED ROOMS: LIGHT GREEN FILL
+                edge_color = '#388E3C'  # Green
+                edge_width = 4.0
+                facecolor = '#81C784'  # Light green
                 fill = True
-                alpha = 0.7
+                alpha = 0.75
+            elif priority == 0.0 and room.evacuees_remaining > 0:
+                # BLOCKED BY FIRE: BRIGHT PINK FILL
+                edge_color = '#C2185B'  # Dark pink
+                edge_width = 4.0
+                facecolor = '#F06292'  # Bright pink
+                fill = True
+                alpha = 0.85
             elif room.is_exit:
                 edge_color = '#2E7D32'  # Dark green
                 edge_width = 3.0

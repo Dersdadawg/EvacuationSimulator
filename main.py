@@ -224,7 +224,7 @@ def run_simulation(layout_path: str, params: dict, output_dir: str = None):
         
         try:
             from sim.viz.matplotlib_animator import MatplotlibAnimator
-            animator = MatplotlibAnimator(sim, fps=30)  # 30 FPS for smooth animation
+            animator = MatplotlibAnimator(sim, fps=60)  # 60 FPS for ultra-smooth animation
             animator.run()
         except ImportError as e:
             print(f"Error: Visualization requires matplotlib. Install with: pip install matplotlib")
