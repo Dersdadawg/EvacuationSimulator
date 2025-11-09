@@ -140,8 +140,24 @@ class SimulationLogger:
               f"({results['percent_rescued']:.1f}%)")
         print(f"Rooms Cleared:       {results['rooms_cleared']}/{results['total_rooms']} "
               f"({results['percent_cleared']:.1f}%)")
-        print(f"Success Score:       {results['success_score']:.3f}")
-        print(f"Avg Hazard Exposure: {results['avg_hazard_exposure']:.2f}")
+        
+        # SUCCESS RATE - Prominently displayed
+        print("\n" + "-"*60)
+        print("SUCCESS RATE CALCULATION")
+        print("-"*60)
+        rescued = results['evacuees_rescued']
+        avg_priority = results.get('avg_priority', 100.0)
+        time = results['time']
+        responders = results.get('num_responders', 2)
+        success_score = results['success_score']
+        
+        print(f"Formula: SR = (Rescued × Avg_Priority) / (Time × Responders)")
+        print(f"         SR = ({rescued} × {avg_priority:.2f}) / ({time:.1f} × {responders})")
+        print(f"         SR = {rescued * avg_priority:.2f} / {time * responders:.2f}")
+        print(f"\n>>> SUCCESS RATE: {success_score:.4f} <<<")
+        print("-"*60)
+        
+        print(f"\nAvg Hazard Exposure: {results['avg_hazard_exposure']:.2f}")
         print(f"Max Hazard Level:    {results['max_hazard']:.2f}")
         print("\nPer-Agent Stats:")
         print("-" * 60)

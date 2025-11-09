@@ -494,6 +494,26 @@ class Simulator:
                          {'reason': 'all_agents_dead', 'time': self.time})
             return
         
+        # All priority indices = 0 (all rooms evacuated or blocked)
+        if remaining_evac > 0:
+            uncleared_rooms = self.env.get_uncleared_rooms()
+            if uncleared_rooms and self.agent_manager.agents:
+                all_priorities_zero = True
+                first_agent = self.agent_manager.agents[0]
+                for room_id in uncleared_rooms:
+                    priority = self.decision_engine.calculate_priority_index(room_id, first_agent.current_room)
+                    if priority > 0:
+                        all_priorities_zero = False
+                        break
+                
+                if all_priorities_zero:
+                    self.complete = True
+                    self.running = False
+                    print(f'[SIM] All priority indices = 0! No more rescues possible.')
+                    self.log_event(EventType.SIMULATION_END, None, None,
+                                 {'reason': 'all_priorities_zero', 'time': self.time, 'trapped': remaining_evac})
+                    return
+        
         # Time cap reached (very high limit)
         if self.time >= self.time_cap:
             self.complete = True
