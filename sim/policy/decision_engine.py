@@ -54,43 +54,54 @@ class DecisionEngine:
     
     def calculate_priority_index(self, room_id: str, agent_position: str) -> float:
         """
-        Calculate room priority with GRANULAR values (not just integers!)
+        Calculate room priority with GRANULAR values
         
-        More granular formula: P_i(t) = A_i * (E_i + λ*D_i*100)
+        Formula: P_i(t) = A_i * E_i * (100 + λ*D_i) / (1 + distance/10)
         
         Args:
             room_id: Room to evaluate
             agent_position: Current agent position for accessibility check
             
         Returns:
-            Priority index value (granular, not rounded to integers)
+            Priority index value (granular, not integers)
         """
         room = self.env.rooms[room_id]
-        
-        # A_i(t): Accessibility (1 if accessible, 0 if not)
-        path = self.env.get_shortest_path(agent_position, room_id)
-        A_i = 1.0 if path is not None else 0.0
-        
-        # E_i(t): Expected number of evacuees
-        E_i = float(room.evacuees_remaining)
         
         # If already cleared or no evacuees, priority = 0
         if room.cleared or room.evacuees_remaining == 0:
             return 0.0
         
+        # A_i(t): Accessibility (1 if accessible, 0 if not)
+        path = self.env.get_shortest_path(agent_position, room_id)
+        A_i = 1.0 if path is not None else 0.0
+        
+        if A_i == 0.0:
+            return 0.0
+        
+        # E_i(t): Expected number of evacuees
+        E_i = float(room.evacuees_remaining)
+        
         # D_i(t): Average danger level [0, 1]
         D_i = room.hazard
         
-        # λ: Weight for danger component
-        lambda_val = 50.0  # Makes danger highly significant!
+        # Calculate distance from agent to room
+        if agent_position in self.env.rooms:
+            agent_room = self.env.rooms[agent_position]
+            distance = abs(room.x - agent_room.x) + abs(room.y - agent_room.y)
+        else:
+            distance = 0.0
         
-        # GRANULAR FORMULA: Danger contributes significantly
-        # E_i = 2, D=0.00: P = 1 × (2 + 0)    = 2.0
-        # E_i = 2, D=0.05: P = 1 × (2 + 2.5)  = 4.5  ← Granular!
-        # E_i = 2, D=0.10: P = 1 × (2 + 5.0)  = 7.0
-        # E_i = 2, D=0.50: P = 1 × (2 + 25.0) = 27.0
-        # E_i = 2, D=1.00: P = 1 × (2 + 50.0) = 52.0
-        priority = A_i * (E_i + lambda_val * D_i)
+        # λ: Danger multiplier
+        lambda_val = 200.0  # High danger sensitivity
+        
+        # GRANULAR FORMULA with distance decay
+        # Base = 100, Danger boost = λ*D_i, Distance penalty = distance/10
+        # E=2, D=0.00, dist=10: P = 2 × 100 / 2.0 = 100.00
+        # E=2, D=0.05, dist=10: P = 2 × 110 / 2.0 = 110.00 ← Granular!
+        # E=2, D=0.20, dist=10: P = 2 × 140 / 2.0 = 140.00 ← Fire room!
+        numerator = E_i * (100.0 + lambda_val * D_i)
+        denominator = 1.0 + distance / 10.0
+        priority = A_i * numerator / denominator
         
         return priority
     
