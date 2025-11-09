@@ -13,6 +13,7 @@ class AgentState(Enum):
     RESCUING = "rescuing"
     DRAGGING = "dragging"
     QUEUED = "queued"
+    ESCAPING = "escaping"
 
 
 class Agent:
@@ -71,6 +72,7 @@ class Agent:
         
         # Safety status
         self.is_dead = False  # True if danger level > 0.95
+        self.escaped = False  # Successfully reached exit when escaping
         
         # History for visualization
         self.position_history: List[Tuple[float, float, int]] = [(x, y, floor)]

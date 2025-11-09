@@ -83,16 +83,24 @@ class DecisionEngine:
         
         # Check if door is on fire (CRITICAL: can't enter if door is burning!)
         if hasattr(self.env, 'hazard_system') and self.env.hazard_system:
-            # Get door position (center of wall facing hallway)
-            door_x = room.x
-            door_y = room.y + room.height / 2.0 if room.y < 17 else room.y - 0.5
+            # Get actual door position from layout connections
+            door_pos = None
+            if hasattr(self.env, 'layout') and 'connections' in self.env.layout:
+                for conn in self.env.layout['connections']:
+                    if conn['from'] == room_id and 'door_pos' in conn:
+                        door_pos = (conn['door_pos']['x'], conn['door_pos']['y'])
+                        break
             
-            # Check if door cell is burning
-            door_cell_key = (round(door_x / 0.5) * 0.5 + 0.25, round(door_y / 0.5) * 0.5 + 0.25)
-            if door_cell_key in self.env.hazard_system.cells:
-                door_cell = self.env.hazard_system.cells[door_cell_key]
-                if door_cell.is_burning or door_cell.danger_level > 0.9:
-                    return 0.0  # Door blocked by fire!
+            if door_pos:
+                # Check if door cell is burning (check multiple cells around door for 2m width)
+                for dx in [-1, 0, 1]:  # Check 3 cells (1.5m) around door center
+                    door_x = door_pos[0] + dx * 0.5
+                    door_y = door_pos[1]
+                    door_cell_key = (round(door_x / 0.5) * 0.5 + 0.25, round(door_y / 0.5) * 0.5 + 0.25)
+                    if door_cell_key in self.env.hazard_system.cells:
+                        door_cell = self.env.hazard_system.cells[door_cell_key]
+                        if door_cell.is_burning or door_cell.danger_level > 0.9:
+                            return 0.0  # Door blocked by fire!
         
         # D_i(t): Average danger level [0, 1]
         D_i = room.hazard

@@ -682,6 +682,25 @@ class MatplotlibAnimator:
                              edgecolor='none', alpha=0.95)
                 )
                 self.agent_dots.append(death_label)
+            elif agent.escaped:
+                # Draw green checkmark over escaped agent
+                check_mark = self.ax.plot([agent.x - 0.8, agent.x - 0.2, agent.x + 1], 
+                                        [agent.y, agent.y - 0.5, agent.y + 1],
+                                        color='#43A047', linewidth=4, zorder=12)[0]
+                self.agent_dots.append(check_mark)
+                
+                # Escaped label
+                escape_label = self.ax.text(
+                    agent.x, agent.y - 2, 'ESCAPED',
+                    ha='center', va='center',
+                    fontsize=9, fontweight='700',
+                    fontfamily='sans-serif',
+                    color='white', zorder=13,
+                    bbox=dict(boxstyle='round,pad=0.4', 
+                             facecolor='#43A047', 
+                             edgecolor='none', alpha=0.95)
+                )
+                self.agent_dots.append(escape_label)
             else:
                 label = self.ax.text(agent.x, agent.y - 1.6, f'R{agent.id}',
                                    ha='center', va='center',
