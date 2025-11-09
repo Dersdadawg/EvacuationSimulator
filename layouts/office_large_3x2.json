@@ -1,0 +1,141 @@
+{
+  "name": "Large Office - 3x2 Grid",
+  "description": "Large office with 6 rooms arranged in 3x2 grid (same as original)",
+  "dimensions": {
+    "width": 46.92,
+    "height": 34.06
+  },
+  "rooms": [
+    {
+      "id": "HALL",
+      "floor": 0,
+      "x": 23.46,
+      "y": 17.03,
+      "width": 31.28,
+      "height": 4.06,
+      "area": 127.0,
+      "evacuees": 0,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "hallway"
+    },
+    {
+      "id": "EXIT_LEFT",
+      "floor": 0,
+      "x": 1.0,
+      "y": 17.03,
+      "width": 6.0,
+      "height": 4.06,
+      "area": 24.4,
+      "evacuees": 0,
+      "is_exit": true,
+      "is_stair": false,
+      "type": "exit"
+    },
+    {
+      "id": "EXIT_RIGHT",
+      "floor": 0,
+      "x": 45.0,
+      "y": 17.03,
+      "width": 6.0,
+      "height": 4.06,
+      "area": 24.4,
+      "evacuees": 0,
+      "is_exit": true,
+      "is_stair": false,
+      "type": "exit"
+    },
+    {
+      "id": "O1",
+      "floor": 0,
+      "x": 7.82,
+      "y": 6.34,
+      "width": 15.64,
+      "height": 12.68,
+      "area": 198.3,
+      "evacuees": 5,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    },
+    {
+      "id": "O2",
+      "floor": 0,
+      "x": 23.46,
+      "y": 6.34,
+      "width": 15.64,
+      "height": 12.68,
+      "area": 198.3,
+      "evacuees": 3,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    },
+    {
+      "id": "O3",
+      "floor": 0,
+      "x": 39.1,
+      "y": 6.34,
+      "width": 15.64,
+      "height": 12.68,
+      "area": 198.3,
+      "evacuees": 2,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    },
+    {
+      "id": "O4",
+      "floor": 0,
+      "x": 7.82,
+      "y": 27.38,
+      "width": 15.64,
+      "height": 12.68,
+      "area": 198.3,
+      "evacuees": 4,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    },
+    {
+      "id": "O5",
+      "floor": 0,
+      "x": 23.46,
+      "y": 27.38,
+      "width": 15.64,
+      "height": 12.68,
+      "area": 198.3,
+      "evacuees": 1,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    },
+    {
+      "id": "O6",
+      "floor": 0,
+      "x": 39.1,
+      "y": 27.38,
+      "width": 15.64,
+      "height": 12.68,
+      "area": 198.3,
+      "evacuees": 2,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    }
+  ],
+  "connections": [
+    {"from": "O1", "to": "HALL", "distance": 2, "door_pos": {"x": 7.82, "y": 19.02}},
+    {"from": "O2", "to": "HALL", "distance": 2, "door_pos": {"x": 23.46, "y": 19.02}},
+    {"from": "O3", "to": "HALL", "distance": 2, "door_pos": {"x": 39.1, "y": 19.02}},
+    {"from": "O4", "to": "HALL", "distance": 2, "door_pos": {"x": 7.82, "y": 25.73}},
+    {"from": "O5", "to": "HALL", "distance": 2, "door_pos": {"x": 23.46, "y": 25.73}},
+    {"from": "O6", "to": "HALL", "distance": 2, "door_pos": {"x": 39.1, "y": 25.73}}
+  ],
+  "agent_starts": [
+    {"x": 1.0, "y": 17.03, "floor": 0},
+    {"x": 45.0, "y": 17.03, "floor": 0}
+  ]
+}
+
+

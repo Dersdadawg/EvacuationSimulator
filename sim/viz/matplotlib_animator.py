@@ -46,10 +46,18 @@ class MatplotlibAnimator:
                         '#C62828', '#5E35B1', '#D32F2F', '#00695C']
     }
     
-    def __init__(self, simulator, fps=20):
+    def __init__(self, simulator, fps=20, layouts=None):
         """Initialize modern animator"""
         self.sim = simulator
         self.fps = fps
+        self.layouts = layouts or [
+            ("layouts/office_correct_dimensions.json", 3),
+            ("layouts/office_small_2x2.json", 2),
+            ("layouts/office_medium_2x3.json", 3),
+            ("layouts/office_xlarge_4x2.json", 4),
+            ("layouts/office_tiny_1x2.json", 1),
+        ]
+        self.current_layout_idx = 0
         
         # Create figure with modern styling - LARGE SIZE, wider for map
         self.fig = plt.figure(figsize=(26, 14), facecolor=self.COLORS['bg'])
@@ -65,9 +73,9 @@ class MatplotlibAnimator:
                                   linewidth=0,
                                   alpha=1.0))
         
-        # Main plot area - larger, left side
+        # Main plot area - FULL WIDTH (no legends on right)
         self.ax = self.fig.add_subplot(111)
-        self.ax.set_position([0.05, 0.05, 0.75, 0.88])  # [left, bottom, width, height]
+        self.ax.set_position([0.05, 0.05, 0.92, 0.88])  # [left, bottom, width, height]
         self.ax.set_facecolor(self.COLORS['white'])
         
         # Setup plot with modern styling
@@ -111,8 +119,7 @@ class MatplotlibAnimator:
         self.wall_renderer = WallRenderer(self.ax, layout_dict, self.current_floor)
         self.wall_renderer.draw_walls()
         
-        self._add_fire_legend()  # Add colorbar legend
-        self._add_status_legend()  # Add room status legend
+        # Legends removed - cleaner UI
         
         # Agent trail history
         self.trail_length = 30
@@ -214,6 +221,47 @@ class MatplotlibAnimator:
             zorder=100
         )
     
+    def _update_room_colors(self):
+        """Update room colors based on current evacuee status"""
+        for room_id, room in self.sim.env.rooms.items():
+            if room.floor != self.current_floor:
+                continue
+            if room_id not in self.room_patches:
+                continue
+            
+            patch = self.room_patches[room_id]
+            
+            # Update color based on evacuee status
+            if not room.is_exit and not room.is_stair and hasattr(room, 'type') and room.type == 'office':
+                if room.evacuees_remaining == 0:
+                    # EVACUATED: SUPER BRIGHT LIGHT GREEN - MAXIMUM VISIBILITY
+                    patch.set_edgecolor('#00C853')  # Bright green border
+                    patch.set_linewidth(8.0)  # Extra thick
+                    patch.set_facecolor('#B9F6CA')  # Light green (pastel)
+                    patch.set_fill(True)
+                    patch.set_alpha(0.95)  # Nearly opaque
+                    patch.set_zorder(25)  # On top of everything
+                elif room.evacuees_remaining > 0:
+                    # Check if blocked
+                    if self.sim.agent_manager.agents:
+                        first_agent = self.sim.agent_manager.agents[0]
+                        priority = self.sim.decision_engine.calculate_priority_index(
+                            room.id, first_agent.current_room
+                        )
+                        if priority == 0.0:
+                            # BLOCKED: LIGHT BLUE
+                            patch.set_edgecolor('#1976D2')
+                            patch.set_linewidth(4.0)
+                            patch.set_facecolor('#90CAF9')
+                            patch.set_fill(True)
+                            patch.set_alpha(0.75)
+                        else:
+                            # Active - transparent
+                            patch.set_edgecolor('#000000')
+                            patch.set_linewidth(3.0)
+                            patch.set_fill(False)
+                            patch.set_alpha(1.0)
+    
     def _draw_cell_heatmap(self):
         """Draw cell-level danger heatmap (white = safe, RED = FIRE!)"""
         # Clear previous heatmap
@@ -245,6 +293,23 @@ class MatplotlibAnimator:
                 # Check if cell is on current floor
                 room_at_cell = self.sim.env.rooms.get(cell.room_id)
                 if not room_at_cell or room_at_cell.floor != self.current_floor:
+                    continue
+                
+                # LIGHT GREEN for priority ~0 rooms (not burning)
+                if cell.room_id in zero_priority_rooms and not cell.is_burning:
+                    cell_size = self.grid_resolution
+                    rect = patches.Rectangle(
+                        (x - cell_size/2, y - cell_size/2),
+                        cell_size,
+                        cell_size,
+                        facecolor='#C8E6C9',  # Super light green
+                        edgecolor='none',
+                        alpha=0.85,
+                        zorder=11
+                    )
+                    self.cell_heatmap_patches.append(rect)
+                    self.ax.add_patch(rect)
+                    drawn_count += 1
                     continue
                 
                 # WHITE -> RED COLORMAP with SHADERS
@@ -323,33 +388,46 @@ class MatplotlibAnimator:
             if room.floor != self.current_floor:
                 continue
             
-            # Determine room styling and fill
-            # Calculate priority to check if P=0
+            # Determine room styling and fill based on evacuees
             if not room.is_exit and not room.is_stair and hasattr(room, 'type') and room.type == 'office':
-                if self.sim.agent_manager.agents:
-                    first_agent = self.sim.agent_manager.agents[0]
-                    priority = self.sim.decision_engine.calculate_priority_index(
-                        room.id, first_agent.current_room
-                    )
+                if room.evacuees_remaining == 0:
+                    # EVACUATED: BRIGHT PASTEL GREEN - IMMEDIATE VISUAL FEEDBACK
+                    edge_color = '#43A047'  # Bright green border
+                    edge_width = 6.0
+                    facecolor = '#81C784'  # Bright pastel green
+                    fill = True
+                    alpha = 0.90  # Very visible
+                elif room.evacuees_remaining > 0:
+                    # Calculate priority to check if blocked
+                    if self.sim.agent_manager.agents:
+                        first_agent = self.sim.agent_manager.agents[0]
+                        priority = self.sim.decision_engine.calculate_priority_index(
+                            room.id, first_agent.current_room
+                        )
+                    else:
+                        priority = 1
+                    
+                    if priority == 0.0:
+                        # BLOCKED: LIGHT BLUE
+                        edge_color = '#1976D2'  # Blue
+                        edge_width = 4.0
+                        facecolor = '#90CAF9'  # Light blue
+                        fill = True
+                        alpha = 0.75
+                    else:
+                        # Active room - normal styling
+                        edge_color = '#000000'
+                        edge_width = 3.0
+                        facecolor = 'none'
+                        fill = False
+                        alpha = 1.0
                 else:
-                    priority = 0
-            else:
-                priority = 1  # Non-offices don't get colored
-            
-            if priority == 0.0 and room.evacuees_remaining == 0:
-                # EVACUATED: LIGHT GREEN
-                edge_color = '#388E3C'  # Green
-                edge_width = 4.0
-                facecolor = '#81C784'  # Light green
-                fill = True
-                alpha = 0.75
-            elif priority == 0.0 and room.evacuees_remaining > 0:
-                # BLOCKED: LIGHT BLUE
-                edge_color = '#1976D2'  # Blue
-                edge_width = 4.0
-                facecolor = '#90CAF9'  # Light blue
-                fill = True
-                alpha = 0.75
+                    # Non-office room
+                    edge_color = '#000000'
+                    edge_width = 3.0
+                    facecolor = 'none'
+                    fill = False
+                    alpha = 1.0
             elif room.is_exit:
                 edge_color = '#2E7D32'  # Dark green
                 edge_width = 3.0
@@ -369,9 +447,10 @@ class MatplotlibAnimator:
                 fill = False
                 alpha = 1.0
             else:
-                edge_color = '#000000'  # BLACK borders for offices
+                # Default room styling
+                edge_color = '#000000'
                 edge_width = 3.0
-                facecolor = 'none'  # Transparent - show heatmap
+                facecolor = 'none'
                 fill = False
                 alpha = 1.0
             
@@ -524,6 +603,12 @@ class MatplotlibAnimator:
                 if self.speed < 10:
                     self.speed += 1
                     print(f'[SPEED] {self.speed}x', flush=True)
+            elif event.key == 'q':
+                # Show next layout info
+                self.current_layout_idx = (self.current_layout_idx + 1) % len(self.layouts)
+                next_layout, next_agents = self.layouts[self.current_layout_idx]
+                print(f'\n[LAYOUT] Next: {next_layout} with {next_agents} agents', flush=True)
+                print(f'[LAYOUT] Close window and run: python3 main.py --layout {next_layout} --agents {next_agents}\n', flush=True)
         except Exception as e:
             print(f'[KEY ERROR] {e}', flush=True)
     
@@ -591,7 +676,8 @@ class MatplotlibAnimator:
         if hasattr(self, 'wall_renderer'):
             self.wall_renderer.draw_walls()
         
-        # DON'T update room colors - keep transparent to show heatmap!
+        # UPDATE ROOM COLORS EVERY FRAME (for green evacuated rooms!)
+        self._update_room_colors()
         
         # Update priority indices
         self._update_priority_labels()
@@ -773,10 +859,9 @@ class MatplotlibAnimator:
             f"Controls: SPACE=Play/Pause  |  J/L=Speed  |  ESC=Quit"
         )
         
-        # Show end screen when complete (auto-pause)
-        if self.sim.complete:
+        # Show end screen only when PAUSED and complete
+        if self.sim.complete and self.paused:
             self._show_end_screen(results)
-            self.paused = True
         
         self.info_text.set_text(info)
         

@@ -1,0 +1,140 @@
+{
+  "name": "Shopping Mall Section",
+  "description": "Mall wing with multiple retail stores",
+  "dimensions": {
+    "width": 55.0,
+    "height": 35.0
+  },
+  "rooms": [
+    {
+      "id": "MAIN_CONCOURSE",
+      "floor": 0,
+      "x": 27.5,
+      "y": 17.5,
+      "width": 40.0,
+      "height": 8.0,
+      "area": 320.0,
+      "evacuees": 0,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "hallway"
+    },
+    {
+      "id": "EXIT_EAST",
+      "floor": 0,
+      "x": 50.0,
+      "y": 17.5,
+      "width": 8.0,
+      "height": 8.0,
+      "area": 64.0,
+      "evacuees": 0,
+      "is_exit": true,
+      "is_stair": false,
+      "type": "exit"
+    },
+    {
+      "id": "EXIT_WEST",
+      "floor": 0,
+      "x": 5.0,
+      "y": 17.5,
+      "width": 8.0,
+      "height": 8.0,
+      "area": 64.0,
+      "evacuees": 0,
+      "is_exit": true,
+      "is_stair": false,
+      "type": "exit"
+    },
+    {
+      "id": "STORE1",
+      "floor": 0,
+      "x": 15.0,
+      "y": 5.0,
+      "width": 10.0,
+      "height": 8.0,
+      "area": 80.0,
+      "evacuees": 4,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    },
+    {
+      "id": "STORE2",
+      "floor": 0,
+      "x": 30.0,
+      "y": 5.0,
+      "width": 10.0,
+      "height": 8.0,
+      "area": 80.0,
+      "evacuees": 6,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    },
+    {
+      "id": "STORE3",
+      "floor": 0,
+      "x": 45.0,
+      "y": 5.0,
+      "width": 10.0,
+      "height": 8.0,
+      "area": 80.0,
+      "evacuees": 3,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    },
+    {
+      "id": "STORE4",
+      "floor": 0,
+      "x": 15.0,
+      "y": 27.0,
+      "width": 10.0,
+      "height": 8.0,
+      "area": 80.0,
+      "evacuees": 5,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    },
+    {
+      "id": "STORE5",
+      "floor": 0,
+      "x": 30.0,
+      "y": 27.0,
+      "width": 10.0,
+      "height": 8.0,
+      "area": 80.0,
+      "evacuees": 7,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    },
+    {
+      "id": "FOODCOURT",
+      "floor": 0,
+      "x": 45.0,
+      "y": 27.0,
+      "width": 10.0,
+      "height": 8.0,
+      "area": 80.0,
+      "evacuees": 20,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    }
+  ],
+  "connections": [
+    {"from": "STORE1", "to": "MAIN_CONCOURSE", "distance": 2, "door_pos": {"x": 20.0, "y": 13.0}},
+    {"from": "STORE2", "to": "MAIN_CONCOURSE", "distance": 2, "door_pos": {"x": 35.0, "y": 13.0}},
+    {"from": "STORE3", "to": "MAIN_CONCOURSE", "distance": 2, "door_pos": {"x": 50.0, "y": 13.0}},
+    {"from": "STORE4", "to": "MAIN_CONCOURSE", "distance": 2, "door_pos": {"x": 20.0, "y": 22.0}},
+    {"from": "STORE5", "to": "MAIN_CONCOURSE", "distance": 2, "door_pos": {"x": 35.0, "y": 22.0}},
+    {"from": "FOODCOURT", "to": "MAIN_CONCOURSE", "distance": 2, "door_pos": {"x": 50.0, "y": 22.0}}
+  ],
+  "agent_starts": [
+    {"x": 8.0, "y": 21.5, "floor": 0},
+    {"x": 52.0, "y": 21.5, "floor": 0}
+  ]
+}
+

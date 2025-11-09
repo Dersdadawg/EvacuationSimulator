@@ -27,7 +27,7 @@ class WallRenderer:
                 rooms[room_data['id']] = room_data
         
         wall_color = '#37474F'  # Dark blue-gray
-        door_width_cells = 4  # 2m door = 4 cells of 0.5m
+        door_width_cells = 3  # 1.5m door = 3 cells of 0.5m
         
         # Draw walls for each office (not hallway or exits)
         for room_id, room_data in rooms.items():

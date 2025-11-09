@@ -92,16 +92,17 @@ class DecisionEngine:
                         break
             
             if door_pos:
-                # Check if door cells are burning (2m door = 4 cells wide)
+                # Check if door cells are burning (1.5m door = 3 cells wide)
                 # Also check cells on both sides (in room and in hallway)
-                for dx in [-1.0, -0.5, 0.0, 0.5, 1.0]:  # Check 5 cells (2.5m) around door
+                for dx in [-0.5, 0.0, 0.5]:  # Check 3 cells (1.5m) door width
                     for dy in [-0.5, 0.0, 0.5]:  # Check in front, at, and behind door
                         door_x = door_pos[0] + dx * 0.5
                         door_y = door_pos[1] + dy * 0.5
                         door_cell_key = (round(door_x / 0.5) * 0.5 + 0.25, round(door_y / 0.5) * 0.5 + 0.25)
                         if door_cell_key in self.env.hazard_system.cells:
                             door_cell = self.env.hazard_system.cells[door_cell_key]
-                            if door_cell.is_burning or door_cell.danger_level > 0.85:
+                            # Lower threshold - block faster!
+                            if door_cell.is_burning or door_cell.danger_level > 0.7:
                                 return 0.0  # Door blocked by fire!
         
         # D_i(t): Average danger level [0, 1]

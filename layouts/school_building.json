@@ -1,0 +1,140 @@
+{
+  "name": "School Building",
+  "description": "Elementary school with classrooms and cafeteria",
+  "dimensions": {
+    "width": 60.0,
+    "height": 40.0
+  },
+  "rooms": [
+    {
+      "id": "MAIN_HALL",
+      "floor": 0,
+      "x": 30.0,
+      "y": 20.0,
+      "width": 40.0,
+      "height": 5.0,
+      "area": 200.0,
+      "evacuees": 0,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "hallway"
+    },
+    {
+      "id": "EXIT_FRONT",
+      "floor": 0,
+      "x": 5.0,
+      "y": 20.0,
+      "width": 8.0,
+      "height": 5.0,
+      "area": 40.0,
+      "evacuees": 0,
+      "is_exit": true,
+      "is_stair": false,
+      "type": "exit"
+    },
+    {
+      "id": "EXIT_BACK",
+      "floor": 0,
+      "x": 55.0,
+      "y": 20.0,
+      "width": 8.0,
+      "height": 5.0,
+      "area": 40.0,
+      "evacuees": 0,
+      "is_exit": true,
+      "is_stair": false,
+      "type": "exit"
+    },
+    {
+      "id": "CLASS1",
+      "floor": 0,
+      "x": 15.0,
+      "y": 5.0,
+      "width": 12.0,
+      "height": 10.0,
+      "area": 120.0,
+      "evacuees": 25,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    },
+    {
+      "id": "CLASS2",
+      "floor": 0,
+      "x": 33.0,
+      "y": 5.0,
+      "width": 12.0,
+      "height": 10.0,
+      "area": 120.0,
+      "evacuees": 23,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    },
+    {
+      "id": "CLASS3",
+      "floor": 0,
+      "x": 51.0,
+      "y": 5.0,
+      "width": 12.0,
+      "height": 10.0,
+      "area": 120.0,
+      "evacuees": 22,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    },
+    {
+      "id": "CLASS4",
+      "floor": 0,
+      "x": 15.0,
+      "y": 30.0,
+      "width": 12.0,
+      "height": 10.0,
+      "area": 120.0,
+      "evacuees": 24,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    },
+    {
+      "id": "CLASS5",
+      "floor": 0,
+      "x": 33.0,
+      "y": 30.0,
+      "width": 12.0,
+      "height": 10.0,
+      "area": 120.0,
+      "evacuees": 26,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    },
+    {
+      "id": "CAFETERIA",
+      "floor": 0,
+      "x": 51.0,
+      "y": 30.0,
+      "width": 12.0,
+      "height": 10.0,
+      "area": 120.0,
+      "evacuees": 15,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    }
+  ],
+  "connections": [
+    {"from": "CLASS1", "to": "MAIN_HALL", "distance": 2, "door_pos": {"x": 21.0, "y": 15.0}},
+    {"from": "CLASS2", "to": "MAIN_HALL", "distance": 2, "door_pos": {"x": 39.0, "y": 15.0}},
+    {"from": "CLASS3", "to": "MAIN_HALL", "distance": 2, "door_pos": {"x": 57.0, "y": 15.0}},
+    {"from": "CLASS4", "to": "MAIN_HALL", "distance": 2, "door_pos": {"x": 21.0, "y": 25.0}},
+    {"from": "CLASS5", "to": "MAIN_HALL", "distance": 2, "door_pos": {"x": 39.0, "y": 25.0}},
+    {"from": "CAFETERIA", "to": "MAIN_HALL", "distance": 2, "door_pos": {"x": 57.0, "y": 25.0}}
+  ],
+  "agent_starts": [
+    {"x": 8.0, "y": 22.5, "floor": 0},
+    {"x": 58.0, "y": 22.5, "floor": 0}
+  ]
+}
+

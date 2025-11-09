@@ -1,0 +1,126 @@
+{
+  "name": "Corporate Tower Floor",
+  "description": "High-rise office floor with cubicles and conference rooms",
+  "dimensions": {
+    "width": 50.0,
+    "height": 45.0
+  },
+  "rooms": [
+    {
+      "id": "CORRIDOR",
+      "floor": 0,
+      "x": 25.0,
+      "y": 22.5,
+      "width": 35.0,
+      "height": 5.0,
+      "area": 175.0,
+      "evacuees": 0,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "hallway"
+    },
+    {
+      "id": "STAIR_A",
+      "floor": 0,
+      "x": 5.0,
+      "y": 22.5,
+      "width": 5.0,
+      "height": 5.0,
+      "area": 25.0,
+      "evacuees": 0,
+      "is_exit": true,
+      "is_stair": false,
+      "type": "exit"
+    },
+    {
+      "id": "STAIR_B",
+      "floor": 0,
+      "x": 45.0,
+      "y": 22.5,
+      "width": 5.0,
+      "height": 5.0,
+      "area": 25.0,
+      "evacuees": 0,
+      "is_exit": true,
+      "is_stair": false,
+      "type": "exit"
+    },
+    {
+      "id": "OFFICE1",
+      "floor": 0,
+      "x": 12.5,
+      "y": 7.5,
+      "width": 15.0,
+      "height": 10.0,
+      "area": 150.0,
+      "evacuees": 12,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    },
+    {
+      "id": "OFFICE2",
+      "floor": 0,
+      "x": 37.5,
+      "y": 7.5,
+      "width": 15.0,
+      "height": 10.0,
+      "area": 150.0,
+      "evacuees": 15,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    },
+    {
+      "id": "CONF1",
+      "floor": 0,
+      "x": 12.5,
+      "y": 32.5,
+      "width": 10.0,
+      "height": 8.0,
+      "area": 80.0,
+      "evacuees": 8,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    },
+    {
+      "id": "CONF2",
+      "floor": 0,
+      "x": 27.5,
+      "y": 32.5,
+      "width": 10.0,
+      "height": 8.0,
+      "area": 80.0,
+      "evacuees": 6,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    },
+    {
+      "id": "CONF3",
+      "floor": 0,
+      "x": 42.5,
+      "y": 32.5,
+      "width": 10.0,
+      "height": 8.0,
+      "area": 80.0,
+      "evacuees": 10,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    }
+  ],
+  "connections": [
+    {"from": "OFFICE1", "to": "CORRIDOR", "distance": 2, "door_pos": {"x": 20.0, "y": 17.5}},
+    {"from": "OFFICE2", "to": "CORRIDOR", "distance": 2, "door_pos": {"x": 45.0, "y": 17.5}},
+    {"from": "CONF1", "to": "CORRIDOR", "distance": 2, "door_pos": {"x": 17.5, "y": 27.5}},
+    {"from": "CONF2", "to": "CORRIDOR", "distance": 2, "door_pos": {"x": 32.5, "y": 27.5}},
+    {"from": "CONF3", "to": "CORRIDOR", "distance": 2, "door_pos": {"x": 47.5, "y": 27.5}}
+  ],
+  "agent_starts": [
+    {"x": 7.5, "y": 25.0, "floor": 0},
+    {"x": 47.5, "y": 25.0, "floor": 0}
+  ]
+}
+

@@ -1,0 +1,168 @@
+{
+  "name": "Hospital Complex - Main",
+  "description": "Large hospital with emergency department, ICU, and patient wards",
+  "dimensions": {
+    "width": 70.0,
+    "height": 50.0
+  },
+  "rooms": [
+    {
+      "id": "LOBBY",
+      "floor": 0,
+      "x": 35.0,
+      "y": 5.0,
+      "width": 20.0,
+      "height": 10.0,
+      "area": 200.0,
+      "evacuees": 0,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "hallway"
+    },
+    {
+      "id": "EXIT_MAIN",
+      "floor": 0,
+      "x": 35.0,
+      "y": 0.0,
+      "width": 20.0,
+      "height": 3.0,
+      "area": 60.0,
+      "evacuees": 0,
+      "is_exit": true,
+      "is_stair": false,
+      "type": "exit"
+    },
+    {
+      "id": "ER1",
+      "floor": 0,
+      "x": 5.0,
+      "y": 10.0,
+      "width": 15.0,
+      "height": 12.0,
+      "area": 180.0,
+      "evacuees": 8,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    },
+    {
+      "id": "ER2",
+      "floor": 0,
+      "x": 25.0,
+      "y": 10.0,
+      "width": 15.0,
+      "height": 12.0,
+      "area": 180.0,
+      "evacuees": 6,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    },
+    {
+      "id": "ICU1",
+      "floor": 0,
+      "x": 45.0,
+      "y": 10.0,
+      "width": 15.0,
+      "height": 12.0,
+      "area": 180.0,
+      "evacuees": 12,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    },
+    {
+      "id": "ICU2",
+      "floor": 0,
+      "x": 65.0,
+      "y": 10.0,
+      "width": 15.0,
+      "height": 12.0,
+      "area": 180.0,
+      "evacuees": 10,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    },
+    {
+      "id": "HALL_MAIN",
+      "floor": 0,
+      "x": 35.0,
+      "y": 25.0,
+      "width": 50.0,
+      "height": 6.0,
+      "area": 300.0,
+      "evacuees": 0,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "hallway"
+    },
+    {
+      "id": "WARD1",
+      "floor": 0,
+      "x": 5.0,
+      "y": 35.0,
+      "width": 15.0,
+      "height": 12.0,
+      "area": 180.0,
+      "evacuees": 7,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    },
+    {
+      "id": "WARD2",
+      "floor": 0,
+      "x": 25.0,
+      "y": 35.0,
+      "width": 15.0,
+      "height": 12.0,
+      "area": 180.0,
+      "evacuees": 5,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    },
+    {
+      "id": "WARD3",
+      "floor": 0,
+      "x": 45.0,
+      "y": 35.0,
+      "width": 15.0,
+      "height": 12.0,
+      "area": 180.0,
+      "evacuees": 9,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    },
+    {
+      "id": "WARD4",
+      "floor": 0,
+      "x": 65.0,
+      "y": 35.0,
+      "width": 15.0,
+      "height": 12.0,
+      "area": 180.0,
+      "evacuees": 4,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    }
+  ],
+  "connections": [
+    {"from": "ER1", "to": "HALL_MAIN", "distance": 2, "door_pos": {"x": 12.5, "y": 22.0}},
+    {"from": "ER2", "to": "HALL_MAIN", "distance": 2, "door_pos": {"x": 32.5, "y": 22.0}},
+    {"from": "ICU1", "to": "HALL_MAIN", "distance": 2, "door_pos": {"x": 52.5, "y": 22.0}},
+    {"from": "ICU2", "to": "HALL_MAIN", "distance": 2, "door_pos": {"x": 72.5, "y": 22.0}},
+    {"from": "WARD1", "to": "HALL_MAIN", "distance": 2, "door_pos": {"x": 12.5, "y": 28.0}},
+    {"from": "WARD2", "to": "HALL_MAIN", "distance": 2, "door_pos": {"x": 32.5, "y": 28.0}},
+    {"from": "WARD3", "to": "HALL_MAIN", "distance": 2, "door_pos": {"x": 52.5, "y": 28.0}},
+    {"from": "WARD4", "to": "HALL_MAIN", "distance": 2, "door_pos": {"x": 72.5, "y": 28.0}},
+    {"from": "LOBBY", "to": "EXIT_MAIN", "distance": 1}
+  ],
+  "agent_starts": [
+    {"x": 35.0, "y": 2.0, "floor": 0}
+  ]
+}
+

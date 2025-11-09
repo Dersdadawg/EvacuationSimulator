@@ -1,0 +1,126 @@
+{
+  "name": "Apartment Complex Floor",
+  "description": "Residential floor with 8 apartments",
+  "dimensions": {
+    "width": 45.0,
+    "height": 30.0
+  },
+  "rooms": [
+    {
+      "id": "HALLWAY",
+      "floor": 0,
+      "x": 22.5,
+      "y": 15.0,
+      "width": 30.0,
+      "height": 4.0,
+      "area": 120.0,
+      "evacuees": 0,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "hallway"
+    },
+    {
+      "id": "STAIR_EXIT",
+      "floor": 0,
+      "x": 5.0,
+      "y": 15.0,
+      "width": 6.0,
+      "height": 4.0,
+      "area": 24.0,
+      "evacuees": 0,
+      "is_exit": true,
+      "is_stair": false,
+      "type": "exit"
+    },
+    {
+      "id": "APT101",
+      "floor": 0,
+      "x": 15.0,
+      "y": 5.0,
+      "width": 10.0,
+      "height": 7.0,
+      "area": 70.0,
+      "evacuees": 3,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    },
+    {
+      "id": "APT102",
+      "floor": 0,
+      "x": 30.0,
+      "y": 5.0,
+      "width": 10.0,
+      "height": 7.0,
+      "area": 70.0,
+      "evacuees": 2,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    },
+    {
+      "id": "APT103",
+      "floor": 0,
+      "x": 45.0,
+      "y": 5.0,
+      "width": 10.0,
+      "height": 7.0,
+      "area": 70.0,
+      "evacuees": 4,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    },
+    {
+      "id": "APT104",
+      "floor": 0,
+      "x": 15.0,
+      "y": 20.0,
+      "width": 10.0,
+      "height": 7.0,
+      "area": 70.0,
+      "evacuees": 3,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    },
+    {
+      "id": "APT105",
+      "floor": 0,
+      "x": 30.0,
+      "y": 20.0,
+      "width": 10.0,
+      "height": 7.0,
+      "area": 70.0,
+      "evacuees": 1,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    },
+    {
+      "id": "APT106",
+      "floor": 0,
+      "x": 45.0,
+      "y": 20.0,
+      "width": 10.0,
+      "height": 7.0,
+      "area": 70.0,
+      "evacuees": 2,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    }
+  ],
+  "connections": [
+    {"from": "APT101", "to": "HALLWAY", "distance": 2, "door_pos": {"x": 20.0, "y": 12.0}},
+    {"from": "APT102", "to": "HALLWAY", "distance": 2, "door_pos": {"x": 35.0, "y": 12.0}},
+    {"from": "APT103", "to": "HALLWAY", "distance": 2, "door_pos": {"x": 50.0, "y": 12.0}},
+    {"from": "APT104", "to": "HALLWAY", "distance": 2, "door_pos": {"x": 20.0, "y": 17.0}},
+    {"from": "APT105", "to": "HALLWAY", "distance": 2, "door_pos": {"x": 35.0, "y": 17.0}},
+    {"from": "APT106", "to": "HALLWAY", "distance": 2, "door_pos": {"x": 50.0, "y": 17.0}}
+  ],
+  "agent_starts": [
+    {"x": 8.0, "y": 17.0, "floor": 0}
+  ]
+}
+

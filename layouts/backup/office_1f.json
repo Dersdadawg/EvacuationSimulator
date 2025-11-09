@@ -1,0 +1,91 @@
+{
+  "name": "Single Floor Office (6 rooms)",
+  "description": "Simple office layout for testing - 6 rooms in 2x3 grid",
+  "rooms": [
+    {
+      "id": "EXIT",
+      "floor": 0,
+      "x": 0,
+      "y": 0,
+      "width": 20,
+      "height": 20,
+      "area": 400,
+      "evacuees": 0,
+      "is_exit": true,
+      "is_stair": false
+    },
+    {
+      "id": "R01",
+      "floor": 0,
+      "x": 30,
+      "y": 0,
+      "width": 20,
+      "height": 20,
+      "area": 400,
+      "evacuees": 1,
+      "is_exit": false,
+      "is_stair": false
+    },
+    {
+      "id": "R02",
+      "floor": 0,
+      "x": 60,
+      "y": 0,
+      "width": 20,
+      "height": 20,
+      "area": 400,
+      "evacuees": 0,
+      "is_exit": false,
+      "is_stair": false
+    },
+    {
+      "id": "R03",
+      "floor": 0,
+      "x": 0,
+      "y": 30,
+      "width": 20,
+      "height": 20,
+      "area": 400,
+      "evacuees": 2,
+      "is_exit": false,
+      "is_stair": false
+    },
+    {
+      "id": "R04",
+      "floor": 0,
+      "x": 30,
+      "y": 30,
+      "width": 20,
+      "height": 20,
+      "area": 400,
+      "evacuees": 0,
+      "is_exit": false,
+      "is_stair": false
+    },
+    {
+      "id": "R05",
+      "floor": 0,
+      "x": 60,
+      "y": 30,
+      "width": 20,
+      "height": 20,
+      "area": 400,
+      "evacuees": 1,
+      "is_exit": false,
+      "is_stair": false
+    }
+  ],
+  "connections": [
+    {"from": "EXIT", "to": "R01", "distance": 10},
+    {"from": "R01", "to": "R02", "distance": 10},
+    {"from": "EXIT", "to": "R03", "distance": 10},
+    {"from": "R01", "to": "R04", "distance": 10},
+    {"from": "R02", "to": "R05", "distance": 10},
+    {"from": "R03", "to": "R04", "distance": 10},
+    {"from": "R04", "to": "R05", "distance": 10}
+  ],
+  "agent_starts": [
+    {"x": 0, "y": 0, "floor": 0}
+  ]
+}
+

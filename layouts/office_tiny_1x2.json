@@ -1,0 +1,71 @@
+{
+  "name": "Tiny Office - 1x2 Grid",
+  "description": "Minimal office with just 2 rooms",
+  "dimensions": {
+    "width": 30.0,
+    "height": 20.0
+  },
+  "rooms": [
+    {
+      "id": "HALL",
+      "floor": 0,
+      "x": 15.0,
+      "y": 10.0,
+      "width": 20.0,
+      "height": 3.0,
+      "area": 60.0,
+      "evacuees": 0,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "hallway"
+    },
+    {
+      "id": "EXIT_MAIN",
+      "floor": 0,
+      "x": 4.0,
+      "y": 10.0,
+      "width": 6.0,
+      "height": 3.0,
+      "area": 18.0,
+      "evacuees": 0,
+      "is_exit": true,
+      "is_stair": false,
+      "type": "exit"
+    },
+    {
+      "id": "O1",
+      "floor": 0,
+      "x": 15.0,
+      "y": 4.0,
+      "width": 14.0,
+      "height": 8.0,
+      "area": 112.0,
+      "evacuees": 4,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    },
+    {
+      "id": "O2",
+      "floor": 0,
+      "x": 15.0,
+      "y": 16.0,
+      "width": 14.0,
+      "height": 8.0,
+      "area": 112.0,
+      "evacuees": 3,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    }
+  ],
+  "connections": [
+    {"from": "O1", "to": "HALL", "distance": 2, "door_pos": {"x": 22.0, "y": 9.5}},
+    {"from": "O2", "to": "HALL", "distance": 2, "door_pos": {"x": 22.0, "y": 11.5}}
+  ],
+  "agent_starts": [
+    {"x": 7.0, "y": 11.5, "floor": 0}
+  ]
+}
+
+

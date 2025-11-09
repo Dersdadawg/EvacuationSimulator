@@ -204,7 +204,7 @@ class Simulator:
                         best_room = room_id
                         best_path = grid_path
             
-            # If best_priority <= 0, ALL rooms are blocked or cleared - escape!
+            # Assign target if valid room found
             if best_room and best_path and best_priority > 0:
                 agent.target_room = best_room
                 agent.waypoints = best_path
@@ -212,9 +212,10 @@ class Simulator:
                 agent.state = AgentState.MOVING
                 self.log_event(EventType.AGENT_MOVE, agent.id, agent.current_room,
                              {'target': best_room, 'priority': best_priority})
-            elif not agent.escaped and agent.state != AgentState.ESCAPING:
-                # No rescuable rooms! Agent should escape (only attempt once)
-                self._assign_escape_route(agent)
+            else:
+                # No rescuable rooms - try to escape!
+                if not agent.escaped and agent.state != AgentState.ESCAPING:
+                    self._assign_escape_route(agent)
         else:
             # Fallback to room-based
             room_score = self.decision_engine.select_next_room(agent)
@@ -493,26 +494,6 @@ class Simulator:
             self.log_event(EventType.SIMULATION_END, None, None,
                          {'reason': 'all_agents_dead', 'time': self.time})
             return
-        
-        # All priority indices = 0 (all rooms evacuated or blocked)
-        if remaining_evac > 0:
-            uncleared_rooms = self.env.get_uncleared_rooms()
-            if uncleared_rooms and self.agent_manager.agents:
-                all_priorities_zero = True
-                first_agent = self.agent_manager.agents[0]
-                for room_id in uncleared_rooms:
-                    priority = self.decision_engine.calculate_priority_index(room_id, first_agent.current_room)
-                    if priority > 0:
-                        all_priorities_zero = False
-                        break
-                
-                if all_priorities_zero:
-                    self.complete = True
-                    self.running = False
-                    print(f'[SIM] All priority indices = 0! No more rescues possible.')
-                    self.log_event(EventType.SIMULATION_END, None, None,
-                                 {'reason': 'all_priorities_zero', 'time': self.time, 'trapped': remaining_evac})
-                    return
         
         # Time cap reached (very high limit)
         if self.time >= self.time_cap:

@@ -121,7 +121,7 @@ Where:
 - **A_i**: Room area/priority
 - **E_i**: Expected evacuee count  
 - **D_i**: Distance to room
-- **ε**: Small constant (0.1)
+- **ε**: Small constant (0.00001)
 
 Agents greedily select the highest-scoring uncleared room at each decision point.
 
