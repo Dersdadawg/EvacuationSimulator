@@ -23,9 +23,9 @@
     "fire_origin": "O1",
     "Q_threshold": 30.0,
     "fire_growth_rate": 0.187,
-    "weight_urgency": 0.4,
-    "weight_neighbor": 0.4,
-    "weight_permeability": 0.2
+    "weight_urgency": 0.6,
+    "weight_neighbor": 0.25,
+    "weight_permeability": 0.15
   },
   "latency": {
     "enabled": false,

@@ -457,10 +457,18 @@ class MatplotlibAnimator:
             # Slow down
             self.speed = max(1, self.speed - 1)
             print(f'Speed: {self.speed}x')
+            # Update animation interval to reflect new speed
+            if hasattr(self, 'anim') and self.anim:
+                new_interval = (1000 / self.fps) / self.speed
+                self.anim.event_source.interval = new_interval
         elif event.key == 'l':
             # Speed up
             self.speed = min(10, self.speed + 1)
             print(f'Speed: {self.speed}x')
+            # Update animation interval to reflect new speed
+            if hasattr(self, 'anim') and self.anim:
+                new_interval = (1000 / self.fps) / self.speed
+                self.anim.event_source.interval = new_interval
     
     def _redraw_all(self):
         """Redraw everything for floor changes"""
@@ -760,7 +768,8 @@ class MatplotlibAnimator:
     
     def run(self):
         """Start the animation"""
-        interval = 1000 / self.fps
+        # Calculate interval based on FPS and current speed
+        interval = (1000 / self.fps) / self.speed
         
         self.anim = FuncAnimation(
             self.fig,
