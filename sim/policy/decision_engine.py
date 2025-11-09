@@ -54,10 +54,9 @@ class DecisionEngine:
     
     def calculate_priority_index(self, room_id: str, agent_position: str) -> float:
         """
-        Calculate room priority - REVISED for intuitive behavior:
-        Fire rooms should have HIGHEST priority!
+        Calculate room priority using EXACT formula from paper:
         
-        P_i(t) = A_i(t) * E_i(t) * (1 + D_i(t) * 100)
+        P_i(t) = (A_i(t) * E_i(t) * [1 + λD_i(t)]) / (D_i(t) + ε)
         
         Args:
             room_id: Room to evaluate
@@ -73,7 +72,7 @@ class DecisionEngine:
         A_i = 1.0 if path is not None else 0.0
         
         # E_i(t): Expected number of evacuees
-        E_i = max(room.evacuees_remaining, 1.0)  # Always at least 1 if not cleared
+        E_i = float(room.evacuees_remaining) if room.evacuees_remaining > 0 else 0.1
         
         # If already cleared but no evacuees, priority = 0
         if room.cleared and room.evacuees_remaining == 0:
@@ -82,10 +81,16 @@ class DecisionEngine:
         # D_i(t): Average danger level [0, 1]
         D_i = room.hazard
         
-        # REVISED FORMULA: Higher danger = MUCH higher priority
-        # Room with fire gets priority 100x higher!
-        # P = A * E * (1 + D * 100)
-        priority = A_i * E_i * (1.0 + D_i * 100.0)
+        # λ: Behavior parameter (>1 = prioritize high danger, <1 = prioritize low danger)
+        lambda_val = self.lambda_param  # Should be > 1 for fire rooms priority
+        
+        # ε: Small term to prevent division by zero
+        eps = self.epsilon
+        
+        # EXACT PAPER FORMULA
+        numerator = A_i * E_i * (1.0 + lambda_val * D_i)
+        denominator = D_i + eps
+        priority = numerator / denominator
         
         return priority
     

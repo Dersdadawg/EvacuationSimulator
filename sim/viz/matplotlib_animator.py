@@ -453,6 +453,14 @@ class MatplotlibAnimator:
         elif event.key == 'down':
             self.current_floor = max(self.current_floor - 1, min(self.sim.env.floors.keys()))
             self._redraw_all()
+        elif event.key == 'j':
+            # Slow down
+            self.speed = max(1, self.speed - 1)
+            print(f'Speed: {self.speed}x')
+        elif event.key == 'l':
+            # Speed up
+            self.speed = min(10, self.speed + 1)
+            print(f'Speed: {self.speed}x')
     
     def _redraw_all(self):
         """Redraw everything for floor changes"""
@@ -660,10 +668,10 @@ class MatplotlibAnimator:
             f"Time: {self.sim.time:.1f}s  |  Floor: {self.current_floor}  |  "
             f"Rescued: {results['evacuees_rescued']}/{results['total_evacuees']} ({rescued_pct:.0f}%)\n"
             f"Rooms Cleared: {results['rooms_cleared']}/{results['total_rooms']} ({cleared_pct:.0f}%)  |  "
-            f"Score: {results['success_score']:.3f}\n"
+            f"Score: {results['success_score']:.3f}  |  Speed: {self.speed}x\n"
             f"Status: {status}\n"
             f"{'─' * 60}\n"
-            f"Controls: SPACE = Play/Pause  |  ESC = Quit  |  ↑↓ = Floors"
+            f"Controls: SPACE=Play/Pause  |  J/L=Speed  |  ESC=Quit"
         )
         
         if self.sim.complete:
@@ -677,6 +685,19 @@ class MatplotlibAnimator:
     
     def _show_end_screen(self, results):
         """Display beautiful end screen with full statistics"""
+        # Lower opacity of all background elements
+        if not hasattr(self, '_end_screen_shown'):
+            self._end_screen_shown = True
+            
+            # Dim all patches
+            for patch in self.room_patches.values():
+                patch.set_alpha(0.2)
+            for patch in self.cell_heatmap_patches:
+                patch.set_alpha(0.3)
+            if hasattr(self, 'wall_renderer'):
+                for patch in self.wall_renderer.wall_patches:
+                    patch.set_alpha(0.2)
+        
         # Determine outcome
         reason = 'complete'
         from ..engine.simulator import EventType
@@ -686,15 +707,15 @@ class MatplotlibAnimator:
                 break
         
         if reason == 'all_rescued':
-            title = '🎉 MISSION SUCCESS'
+            title = 'MISSION SUCCESS'
             title_color = '#43A047'
             outcome = 'All evacuees rescued!'
         elif reason == 'all_agents_dead':
-            title = '☠️ MISSION FAILED'
+            title = 'MISSION FAILED'
             title_color = '#D32F2F'
             outcome = 'All responders deceased'
         else:
-            title = '⏱️ TIME LIMIT'
+            title = 'TIME LIMIT'
             title_color = '#FB8C00'
             outcome = 'Time expired'
         
@@ -705,35 +726,37 @@ class MatplotlibAnimator:
         # Count deaths
         deaths = sum(1 for a in self.sim.agent_manager.agents if a.is_dead)
         
-        # Beautiful end stats
+        # Beautiful end stats - remove emojis that cause font warnings
         stats = (
             f"{title}\n"
             f"{'═' * 50}\n"
             f"{outcome}\n\n"
             f"FINAL STATISTICS:\n"
             f"{'─' * 50}\n"
-            f"⏱  Time Elapsed: {self.sim.time:.0f} seconds ({self.sim.time/60:.1f} minutes)\n"
-            f"👥 Evacuees Rescued: {results['evacuees_rescued']}/{results['total_evacuees']} ({rescued_pct:.0f}%)\n"
-            f"🚪 Rooms Cleared: {results['rooms_cleared']}/{results['total_rooms']} ({cleared_pct:.0f}%)\n"
-            f"☠️  Responders Lost: {deaths}/2\n"
-            f"🔥 Max Fire Level: {results['max_hazard']:.0%}\n"
-            f"⭐ Success Score: {results['success_score']:.3f}\n"
-            f"{'═' * 50}\n"
+            f"Time Elapsed: {self.sim.time:.0f} seconds ({self.sim.time/60:.1f} minutes)\n"
+            f"Evacuees Rescued: {results['evacuees_rescued']}/{results['total_evacuees']} ({rescued_pct:.0f}%)\n"
+            f"Rooms Cleared: {results['rooms_cleared']}/{results['total_rooms']} ({cleared_pct:.0f}%)\n"
+            f"Responders Lost: {deaths}/2\n"
+            f"Max Fire Level: {results['max_hazard']:.0%}\n"
+            f"Success Score: {results['success_score']:.3f}\n"
+            f"{'═' * 50}\n\n"
             f"Press ESC to close"
         )
         
         # Large centered text box
         self.info_text.set_text(stats)
-        self.info_text.set_fontsize(12)
+        self.info_text.set_fontsize(14)
         self.info_text.set_position((0.5, 0.5))
         self.info_text.set_horizontalalignment('center')
         self.info_text.set_verticalalignment('center')
-        self.info_text.set_bbox(dict(boxstyle='round,pad=1.5', 
+        self.info_text.set_bbox(dict(boxstyle='round,pad=2.0', 
                                      facecolor='white', 
                                      edgecolor=title_color, 
-                                     linewidth=4, 
-                                     alpha=0.98))
+                                     linewidth=5, 
+                                     alpha=1.0))
         self.info_text.set_color(title_color)
+        self.info_text.set_fontweight('700')
+        self.info_text.set_zorder(1000)  # On top of everything!
     
     def run(self):
         """Start the animation"""

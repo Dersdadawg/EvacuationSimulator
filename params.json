@@ -36,7 +36,7 @@
   },
   "policy": {
     "epsilon": 0.001,
-    "lambda": 1.2,
+    "lambda": 5.0,
     "area_weight": 1.0,
     "evacuee_weight": 1.0,
     "distance_weight": 1.0
