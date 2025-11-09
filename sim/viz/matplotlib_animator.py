@@ -3,6 +3,10 @@
 import matplotlib
 matplotlib.use('TkAgg')  # Use interactive backend
 
+# Suppress all warnings to prevent animation freeze
+import warnings
+warnings.filterwarnings('ignore')
+
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from matplotlib.animation import FuncAnimation
@@ -66,10 +70,13 @@ class MatplotlibAnimator:
         
         # Setup plot with modern styling
         self.ax.set_aspect('equal')
+        self.ax.set_xscale('linear')  # FORCE linear scale (prevent log errors)
+        self.ax.set_yscale('linear')  # FORCE linear scale (prevent log errors)
         self.ax.set_xlabel('Position X (meters)', fontweight='500', 
                           color=self.COLORS['text_light'])
         self.ax.set_ylabel('Position Y (meters)', fontweight='500',
                           color=self.COLORS['text_light'])
+        self.ax.set_autoscale_on(False)  # CRITICAL: Disable autoscale to prevent axis limit errors
         
         # Clean, minimal axes
         self.ax.spines['top'].set_visible(False)
@@ -107,13 +114,13 @@ class MatplotlibAnimator:
         self.trail_length = 30
         self.agent_positions = {i: [] for i in range(len(self.sim.agent_manager.agents))}
         
-        # Modern info panel
-        info_bbox = dict(boxstyle='round,pad=1.0', facecolor=self.COLORS['white'], 
+        # Modern info panel - lower position to avoid title overlap
+        info_bbox = dict(boxstyle='round,pad=0.8', facecolor=self.COLORS['white'], 
                         edgecolor='#E0E0E0', linewidth=2, alpha=0.98)
-        self.info_text = self.ax.text(0.02, 0.98, '', transform=self.ax.transAxes,
-                                     verticalalignment='top', fontsize=10,
+        self.info_text = self.ax.text(0.02, 0.92, '', transform=self.ax.transAxes,
+                                     verticalalignment='top', fontsize=9,
                                      fontfamily='sans-serif', color=self.COLORS['text_dark'],
-                                     bbox=info_bbox, linespacing=1.6)
+                                     bbox=info_bbox, linespacing=1.5)
         
         # Animation state
         self.paused = True
