@@ -55,13 +55,14 @@ class MatplotlibAnimator:
         self.fig = plt.figure(figsize=(22, 13), facecolor=self.COLORS['bg'])
         
         # Beautiful title with gradient-like effect
-        title = self.fig.suptitle('EMERGENCY EVACUATION SIMULATOR', 
-                         fontsize=24, fontweight='700', 
-                         color='#1565C0', y=0.98,
-                         bbox=dict(boxstyle='round,pad=0.8', 
-                                  facecolor='white',
-                                  edgecolor='#1976D2',
-                                  linewidth=2.5,
+        title = self.fig.suptitle('FIRE EVACUATION SIMULATION | GRID-BASED HAZARD MODEL', 
+                         fontsize=20, fontweight='600', 
+                         fontfamily='sans-serif',
+                         color='#D32F2F', y=0.98,
+                         bbox=dict(boxstyle='round,pad=0.7', 
+                                  facecolor='#FFEBEE',
+                                  edgecolor='#EF5350',
+                                  linewidth=2,
                                   alpha=0.95))
         
         # Main plot area
@@ -166,9 +167,9 @@ class MatplotlibAnimator:
     
     def _add_fire_legend(self):
         """Add fire danger colorbar legend"""
-        # Create legend showing white -> red gradient
+        # Create legend showing white -> red gradient (moved to top-right to avoid overlap)
         legend_text = self.ax.text(
-            0.98, 0.50, 
+            0.98, 0.80, 
             'DANGER LEVEL\n'
             '━━━━━━━━━━━\n'
             'RED = FIRE\n'
@@ -176,11 +177,11 @@ class MatplotlibAnimator:
             'Yellow = Moderate\n'
             'White = Safe',
             transform=self.ax.transAxes,
-            ha='right', va='center',
-            fontsize=11, fontweight='600',
+            ha='right', va='top',
+            fontsize=10, fontweight='600',
             fontfamily='sans-serif',
             color=self.COLORS['text_dark'],
-            bbox=dict(boxstyle='round,pad=1.0', 
+            bbox=dict(boxstyle='round,pad=0.8', 
                      facecolor=self.COLORS['white'], 
                      edgecolor=self.COLORS['danger'], 
                      linewidth=2.5, alpha=0.95),

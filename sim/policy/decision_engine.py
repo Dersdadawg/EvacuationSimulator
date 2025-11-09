@@ -92,15 +92,18 @@ class DecisionEngine:
                         break
             
             if door_pos:
-                # Check if door cell is burning (check multiple cells around door for 2m width)
-                for dx in [-1, 0, 1]:  # Check 3 cells (1.5m) around door center
-                    door_x = door_pos[0] + dx * 0.5
-                    door_y = door_pos[1]
-                    door_cell_key = (round(door_x / 0.5) * 0.5 + 0.25, round(door_y / 0.5) * 0.5 + 0.25)
-                    if door_cell_key in self.env.hazard_system.cells:
-                        door_cell = self.env.hazard_system.cells[door_cell_key]
-                        if door_cell.is_burning or door_cell.danger_level > 0.9:
-                            return 0.0  # Door blocked by fire!
+                # Check if door cells are burning (2m door = 4 cells wide)
+                # Also check cells on both sides (in room and in hallway)
+                for dx in [-1.0, -0.5, 0.0, 0.5, 1.0]:  # Check 5 cells (2.5m) around door
+                    for dy in [-0.5, 0.0, 0.5]:  # Check in front, at, and behind door
+                        door_x = door_pos[0] + dx * 0.5
+                        door_y = door_pos[1] + dy * 0.5
+                        door_cell_key = (round(door_x / 0.5) * 0.5 + 0.25, round(door_y / 0.5) * 0.5 + 0.25)
+                        if door_cell_key in self.env.hazard_system.cells:
+                            door_cell = self.env.hazard_system.cells[door_cell_key]
+                            if door_cell.is_burning or door_cell.danger_level > 0.85:
+                                print(f"[PRIORITY] Room {room_id} door BLOCKED! Cell {door_cell_key} burning={door_cell.is_burning}, danger={door_cell.danger_level:.2f}")
+                                return 0.0  # Door blocked by fire!
         
         # D_i(t): Average danger level [0, 1]
         D_i = room.hazard
