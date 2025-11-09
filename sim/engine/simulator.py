@@ -212,9 +212,8 @@ class Simulator:
                 agent.state = AgentState.MOVING
                 self.log_event(EventType.AGENT_MOVE, agent.id, agent.current_room,
                              {'target': best_room, 'priority': best_priority})
-            else:
-                # No rescuable rooms (priority=0 or no path)! Agent should escape to nearest exit
-                print(f'[ESCAPE] Agent {agent.id} escaping - best_priority={best_priority:.2f}, best_room={best_room}')
+            elif not agent.escaped and agent.state != AgentState.ESCAPING:
+                # No rescuable rooms! Agent should escape (only attempt once)
                 self._assign_escape_route(agent)
         else:
             # Fallback to room-based
@@ -233,30 +232,37 @@ class Simulator:
         min_dist = float('inf')
         best_path = None
         
-        for exit_id in self.env.exits:
-            exit_room = self.env.rooms[exit_id]
-            # Try to find a safe path to exit
-            grid_path = self.grid_pathfinder.find_path(
-                agent.x, agent.y, exit_room.x, exit_room.y,
-                avoid_danger=True, danger_threshold=0.85  # Be more cautious when escaping
-            )
-            if grid_path and len(grid_path) > 1:
-                dist = len(grid_path)
-                if dist < min_dist:
-                    min_dist = dist
-                    nearest_exit = exit_id
-                    best_path = grid_path
+        # Try to find safest path first (danger < 0.95), then ANY path
+        for danger_threshold in [0.95, 1.5]:  # 1.5 = accept any path (ignore danger)
+            for exit_id in self.env.exits:
+                exit_room = self.env.rooms[exit_id]
+                # Try to find path to exit
+                grid_path = self.grid_pathfinder.find_path(
+                    agent.x, agent.y, exit_room.x, exit_room.y,
+                    avoid_danger=(danger_threshold < 1.0),
+                    danger_threshold=danger_threshold
+                )
+                if grid_path and len(grid_path) > 1:
+                    dist = len(grid_path)
+                    if dist < min_dist:
+                        min_dist = dist
+                        nearest_exit = exit_id
+                        best_path = grid_path
+            
+            # If found a path, stop trying
+            if best_path:
+                break
         
         if nearest_exit and best_path:
             agent.target_room = nearest_exit
             agent.waypoints = best_path
             agent.current_waypoint = 0
             agent.state = AgentState.ESCAPING
-            print(f'[ESCAPE] Agent {agent.id} routing to exit {nearest_exit} via {len(best_path)} waypoints')
             self.log_event(EventType.AGENT_MOVE, agent.id, agent.current_room,
                          {'target': nearest_exit, 'action': 'escaping'})
         else:
-            print(f'[ESCAPE] Agent {agent.id} CANNOT find safe path to any exit!')
+            # Truly surrounded - agent will die
+            agent.state = AgentState.IDLE
     
     def _process_movement(self, agent: Agent):
         """Process agent movement along grid waypoints or room path"""
