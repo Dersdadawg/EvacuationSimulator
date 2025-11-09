@@ -1,0 +1,136 @@
+{
+  "name": "Basic Office with Central Hallway",
+  "description": "6 offices (3 top, 3 bottom) with central hallway. Grid: 0.5m x 0.5m. 1 unit = 1 meter.",
+  "grid_resolution": 0.5,
+  "rooms": [
+    {
+      "id": "HALL",
+      "floor": 0,
+      "x": 0,
+      "y": 10,
+      "width": 30,
+      "height": 4,
+      "area": 120,
+      "evacuees": 0,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "hallway"
+    },
+    {
+      "id": "EXIT_L",
+      "floor": 0,
+      "x": -2,
+      "y": 11,
+      "width": 2,
+      "height": 2,
+      "area": 4,
+      "evacuees": 0,
+      "is_exit": true,
+      "is_stair": false
+    },
+    {
+      "id": "EXIT_R",
+      "floor": 0,
+      "x": 30,
+      "y": 11,
+      "width": 2,
+      "height": 2,
+      "area": 4,
+      "evacuees": 0,
+      "is_exit": true,
+      "is_stair": false
+    },
+    {
+      "id": "O1",
+      "floor": 0,
+      "x": 0,
+      "y": 0,
+      "width": 8,
+      "height": 8,
+      "area": 64,
+      "evacuees": 1,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    },
+    {
+      "id": "O2",
+      "floor": 0,
+      "x": 11,
+      "y": 0,
+      "width": 8,
+      "height": 8,
+      "area": 64,
+      "evacuees": 1,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    },
+    {
+      "id": "O3",
+      "floor": 0,
+      "x": 22,
+      "y": 0,
+      "width": 8,
+      "height": 8,
+      "area": 64,
+      "evacuees": 1,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    },
+    {
+      "id": "O4",
+      "floor": 0,
+      "x": 0,
+      "y": 16,
+      "width": 8,
+      "height": 8,
+      "area": 64,
+      "evacuees": 1,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    },
+    {
+      "id": "O5",
+      "floor": 0,
+      "x": 11,
+      "y": 16,
+      "width": 8,
+      "height": 8,
+      "area": 64,
+      "evacuees": 1,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    },
+    {
+      "id": "O6",
+      "floor": 0,
+      "x": 22,
+      "y": 16,
+      "width": 8,
+      "height": 8,
+      "area": 64,
+      "evacuees": 1,
+      "is_exit": false,
+      "is_stair": false,
+      "type": "office"
+    }
+  ],
+  "connections": [
+    {"from": "EXIT_L", "to": "HALL", "distance": 2},
+    {"from": "HALL", "to": "EXIT_R", "distance": 2},
+    {"from": "O1", "to": "HALL", "distance": 2, "door_pos": {"x": 4, "y": 10}},
+    {"from": "O2", "to": "HALL", "distance": 2, "door_pos": {"x": 15, "y": 10}},
+    {"from": "O3", "to": "HALL", "distance": 2, "door_pos": {"x": 26, "y": 10}},
+    {"from": "O4", "to": "HALL", "distance": 2, "door_pos": {"x": 4, "y": 14}},
+    {"from": "O5", "to": "HALL", "distance": 2, "door_pos": {"x": 15, "y": 14}},
+    {"from": "O6", "to": "HALL", "distance": 2, "door_pos": {"x": 26, "y": 14}}
+  ],
+  "agent_starts": [
+    {"x": -1, "y": 12, "floor": 0}
+  ]
+}
+

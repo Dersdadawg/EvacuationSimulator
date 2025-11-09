@@ -39,7 +39,8 @@ class DecisionEngine:
         self.params = params
         
         # Policy weights
-        self.epsilon = params.get('epsilon', 0.1)
+        self.epsilon = params.get('epsilon', 0.001)
+        self.lambda_param = params.get('lambda', 1.2)  # Paper: behavior parameter
         self.area_weight = params.get('area_weight', 1.0)
         self.evacuee_weight = params.get('evacuee_weight', 1.0)
         self.distance_weight = params.get('distance_weight', 1.0)
@@ -50,6 +51,43 @@ class DecisionEngine:
     def set_agent_params(self, agent_params: dict):
         """Set agent parameters for movement time calculations"""
         self.agent_params = agent_params
+    
+    def calculate_priority_index(self, room_id: str, agent_position: str) -> float:
+        """
+        Calculate room priority - REVISED for intuitive behavior:
+        Fire rooms should have HIGHEST priority!
+        
+        P_i(t) = A_i(t) * E_i(t) * (1 + D_i(t) * 100)
+        
+        Args:
+            room_id: Room to evaluate
+            agent_position: Current agent position for accessibility check
+            
+        Returns:
+            Priority index value
+        """
+        room = self.env.rooms[room_id]
+        
+        # A_i(t): Accessibility (1 if accessible, 0 if not)
+        path = self.env.get_shortest_path(agent_position, room_id)
+        A_i = 1.0 if path is not None else 0.0
+        
+        # E_i(t): Expected number of evacuees
+        E_i = max(room.evacuees_remaining, 1.0)  # Always at least 1 if not cleared
+        
+        # If already cleared but no evacuees, priority = 0
+        if room.cleared and room.evacuees_remaining == 0:
+            return 0.0
+        
+        # D_i(t): Average danger level [0, 1]
+        D_i = room.hazard
+        
+        # REVISED FORMULA: Higher danger = MUCH higher priority
+        # Room with fire gets priority 100x higher!
+        # P = A * E * (1 + D * 100)
+        priority = A_i * E_i * (1.0 + D_i * 100.0)
+        
+        return priority
     
     def calculate_room_weight(self, room_id: str, distance: float) -> float:
         """

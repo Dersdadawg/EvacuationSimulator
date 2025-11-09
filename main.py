@@ -215,25 +215,19 @@ def run_simulation(layout_path: str, params: dict, output_dir: str = None):
     viz_enabled = params.get('visualization', {}).get('enabled', True)
     
     if viz_enabled:
-        print("\nStarting interactive visualization...")
+        print("\nStarting matplotlib animation (20 fps)...")
         print("Controls:")
         print("  SPACE: Play/Pause")
-        print("  →: Step forward")
-        print("  +/-: Adjust speed")
         print("  ↑↓: Change floors")
-        print("  1-9: Jump to floor")
-        print("  H: Toggle hazard overlay")
-        print("  T: Toggle agent trails")
-        print("  E: Toggle evacuee markers")
         print("  ESC: Quit")
         print()
         
         try:
-            from sim.viz.visualizer import Visualizer
-            viz = Visualizer(sim, params.get('visualization', {}))
-            viz.run()
+            from sim.viz.matplotlib_animator import MatplotlibAnimator
+            animator = MatplotlibAnimator(sim, fps=10)  # 10 FPS for smoothness
+            animator.run()
         except ImportError as e:
-            print(f"Error: Visualization requires pygame. Install with: pip install pygame")
+            print(f"Error: Visualization requires matplotlib. Install with: pip install matplotlib")
             print(f"Running in headless mode instead...")
             sim.run()
     else:

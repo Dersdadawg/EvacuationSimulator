@@ -1,23 +1,31 @@
 {
   "simulation": {
-    "time_cap": 600,
+    "time_cap": 99999,
     "tick_duration": 1.0,
     "random_seed": 42
+  },
+  "environment": {
+    "grid_resolution": 0.5,
+    "unit_to_meter": 1.0
   },
   "agents": {
     "count": 2,
     "speed_hall": 1.5,
     "speed_stairs": 0.8,
-    "speed_drag": 0.6,
+    "speed_drag": 1.0,
     "service_time_base": 5.0,
     "sensing_range": 50.0
   },
   "hazard": {
     "enabled": true,
-    "initial_level": 0.0,
-    "spread_rate": 0.02,
-    "stair_up_bias": 1.5,
-    "diffusion_coefficient": 0.1
+    "use_grid_model": true,
+    "grid_resolution": 0.5,
+    "fire_origin": "O1",
+    "Q_threshold": 30.0,
+    "fire_growth_rate": 0.187,
+    "weight_urgency": 0.4,
+    "weight_neighbor": 0.4,
+    "weight_permeability": 0.2
   },
   "latency": {
     "enabled": false,
@@ -27,7 +35,8 @@
     "sensing_delay_std": 0.2
   },
   "policy": {
-    "epsilon": 0.1,
+    "epsilon": 0.001,
+    "lambda": 1.2,
     "area_weight": 1.0,
     "evacuee_weight": 1.0,
     "distance_weight": 1.0
@@ -43,7 +52,7 @@
     "heatmap_opacity": 0.6
   },
   "output": {
-    "save_video": true,
+    "save_video": false,
     "save_charts": true,
     "video_fps": 30,
     "chart_dpi": 150

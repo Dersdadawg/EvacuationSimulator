@@ -9,6 +9,7 @@ from ..env.environment import Environment
 from ..agents.agent_manager import AgentManager
 from ..agents.agent import Agent, AgentState
 from ..policy.decision_engine import DecisionEngine
+from ..pathfinding.grid_astar import GridPathfinder
 
 
 class EventType(Enum):
@@ -58,6 +59,12 @@ class Simulator:
         self.decision_engine = DecisionEngine(environment, params.get('policy', {}))
         self.decision_engine.set_agent_params(params.get('agents', {}))
         
+        # Grid-based pathfinding (avoids walls and danger)
+        if hasattr(environment.hazard_system, 'cells'):
+            self.grid_pathfinder = GridPathfinder(environment, environment.hazard_system)
+        else:
+            self.grid_pathfinder = None
+        
         # Simulation state
         self.tick = 0
         self.time = 0.0
@@ -105,16 +112,42 @@ class Simulator:
         # 1. Update hazards
         self.env.update_hazards(self.tick, self.dt)
         
-        # 2. Process each agent
-        for agent in self.agent_manager.agents:
-            self._process_agent(agent)
+        # 2. Check agent safety (d_c > 0.95 = death)
+        self._check_agent_safety()
         
-        # 3. Check completion
+        # 3. Process each agent
+        for agent in self.agent_manager.agents:
+            if not agent.is_dead:  # Don't process dead agents
+                self._process_agent(agent)
+        
+        # 4. Check completion
         self._check_completion()
         
-        # 4. Increment time
+        # 5. Increment time
         self.tick += 1
         self.time += self.dt
+    
+    def _check_agent_safety(self):
+        """Check if any agents are in lethal danger (d_c > 0.95 OR burning cell)"""
+        if hasattr(self.env.hazard_system, 'cells'):
+            for agent in self.agent_manager.agents:
+                if agent.is_dead:
+                    continue
+                
+                # Find cell at agent's position (cells centered at 0.25, 0.75, 1.25, etc.)
+                cell_x = int(agent.x / 0.5) * 0.5 + 0.25
+                cell_y = int(agent.y / 0.5) * 0.5 + 0.25
+                cell_pos = (cell_x, cell_y)
+                
+                if cell_pos in self.env.hazard_system.cells:
+                    cell = self.env.hazard_system.cells[cell_pos]
+                    # Die if danger > 0.95 OR in burning cell
+                    if cell.danger_level > 0.95 or cell.is_burning:
+                        agent.is_dead = True
+                        agent.state = AgentState.IDLE  # Stop moving
+                        print(f'[DEATH] Agent {agent.id} died at ({agent.x:.1f}, {agent.y:.1f}) - d_c={cell.danger_level:.2f}, burning={cell.is_burning}')
+                        self.log_event(EventType.SIMULATION_END, agent.id, agent.current_room,
+                                     {'reason': 'agent_death', 'danger': cell.danger_level, 'burning': cell.is_burning})
     
     def _process_agent(self, agent: Agent):
         """Process one agent for this tick"""
@@ -144,17 +177,79 @@ class Simulator:
         agent.accumulate_hazard_exposure(current_room.hazard, self.dt)
     
     def _assign_agent_target(self, agent: Agent):
-        """Assign next target room to idle agent"""
-        # Select best room
-        room_score = self.decision_engine.select_next_room(agent)
-        
-        if room_score:
-            agent.set_target(room_score.room_id, room_score.path)
-            self.log_event(EventType.AGENT_MOVE, agent.id, agent.current_room,
-                         {'target': room_score.room_id, 'score': room_score.score})
+        """Assign next target room to idle agent using grid pathfinding"""
+        # Use grid pathfinding to find safe path to highest priority room
+        if self.grid_pathfinder:
+            uncleared_rooms = self.env.get_uncleared_rooms()
+            
+            best_room = None
+            best_priority = -1
+            best_path = None
+            
+            for room_id in uncleared_rooms:
+                priority = self.decision_engine.calculate_priority_index(room_id, agent.current_room)
+                if priority > best_priority:
+                    target_room = self.env.rooms[room_id]
+                    # Find grid path avoiding danger
+                    grid_path = self.grid_pathfinder.find_path(
+                        agent.x, agent.y, target_room.x, target_room.y,
+                        avoid_danger=True, danger_threshold=0.8
+                    )
+                    if grid_path and len(grid_path) > 1:
+                        best_priority = priority
+                        best_room = room_id
+                        best_path = grid_path
+            
+            if best_room and best_path:
+                agent.target_room = best_room
+                agent.waypoints = best_path
+                agent.current_waypoint = 0
+                agent.state = AgentState.MOVING
+                self.log_event(EventType.AGENT_MOVE, agent.id, agent.current_room,
+                             {'target': best_room, 'priority': best_priority})
+        else:
+            # Fallback to room-based
+            room_score = self.decision_engine.select_next_room(agent)
+            if room_score:
+                agent.set_target(room_score.room_id, room_score.path)
+                self.log_event(EventType.AGENT_MOVE, agent.id, agent.current_room,
+                             {'target': room_score.room_id, 'score': room_score.score})
     
     def _process_movement(self, agent: Agent):
-        """Process agent movement along path"""
+        """Process agent movement along grid waypoints or room path"""
+        # Use grid waypoints if available
+        if agent.waypoints and self.grid_pathfinder:
+            self._process_grid_movement(agent)
+        elif agent.path and agent.path_index < len(agent.path):
+            self._process_room_movement(agent)
+        else:
+            # Arrived at target
+            self._handle_arrival(agent)
+    
+    def _process_grid_movement(self, agent: Agent):
+        """Move agent along grid waypoints (cell-by-cell)"""
+        if agent.current_waypoint >= len(agent.waypoints):
+            # Reached goal
+            self._handle_arrival(agent)
+            return
+        
+        # Get next waypoint
+        target_cell = agent.waypoints[agent.current_waypoint]
+        target_x, target_y = target_cell
+        
+        # Move towards waypoint
+        speed = agent.speed_drag if agent.carrying_evacuee else agent.speed_hall
+        reached = agent.move_towards(target_x, target_y, speed, self.dt)
+        
+        if reached:
+            agent.current_waypoint += 1
+            # Update current room based on position
+            room = self.env.get_room_at_position(agent.x, agent.y, agent.floor)
+            if room:
+                agent.current_room = room.id
+    
+    def _process_room_movement(self, agent: Agent):
+        """Process agent movement along room path (old system fallback)"""
         if not agent.path or agent.path_index >= len(agent.path):
             # Arrived at target
             self._handle_arrival(agent)
@@ -181,21 +276,40 @@ class Simulator:
                 else:
                     self.agent_manager.occupy_stair(stair_id, agent.id)
         
-        # Move to next room
+        # Set up target if not already moving to this room
+        if not agent.moving_to_room:
+            next_room = self.env.rooms[next_room_id]
+            agent.target_x = next_room.x
+            agent.target_y = next_room.y
+            agent.moving_to_room = True
+        
+        # Interpolate movement towards target
         next_room = self.env.rooms[next_room_id]
-        agent.update_position(next_room.x, next_room.y, next_room.floor, next_room_id)
-        agent.advance_path()
+        speed = agent.speed_drag if agent.carrying_evacuee else agent.speed_hall
+        if self.env.graph.has_edge(current_room_id, next_room_id):
+            edge = self.env.graph[current_room_id][next_room_id]
+            if edge.get('is_stair', False):
+                speed = agent.speed_stairs
         
-        # Release previous stair if applicable
-        current_room = self.env.rooms[current_room_id]
-        if current_room.is_stair:
-            self.agent_manager.release_stair(current_room_id)
+        # Move towards target
+        reached = agent.move_towards(agent.target_x, agent.target_y, speed, self.dt)
         
-        self.log_event(EventType.AGENT_MOVE, agent.id, next_room_id)
-        
-        # Check if arrived at target
-        if agent.path_index >= len(agent.path):
-            self._handle_arrival(agent)
+        if reached:
+            # Arrived at next room
+            agent.update_position(next_room.x, next_room.y, next_room.floor, next_room_id)
+            agent.advance_path()
+            agent.moving_to_room = False
+            
+            # Release previous stair if applicable
+            current_room = self.env.rooms[current_room_id]
+            if current_room.is_stair:
+                self.agent_manager.release_stair(current_room_id)
+            
+            self.log_event(EventType.AGENT_MOVE, agent.id, next_room_id)
+            
+            # Check if arrived at target
+            if agent.path_index >= len(agent.path):
+                self._handle_arrival(agent)
     
     def _handle_arrival(self, agent: Agent):
         """Handle agent arriving at target room"""
@@ -205,40 +319,17 @@ class Simulator:
         
         # Check if this is exit delivery
         if target_room.is_exit and agent.carrying_evacuee:
-            # Actually remove evacuee from source room
-            if agent.evacuee_source_room and agent.evacuee_source_room in self.env.rooms:
-                source_room = self.env.rooms[agent.evacuee_source_room]
-                source_room.rescue_evacuee()
-            
-            # Log rescue
+            # Log rescue (evacuee already removed when picked up)
             self.log_event(EventType.EVACUEE_RESCUED, agent.id, agent.target_room,
                          {'source_room': agent.evacuee_source_room})
             
-            # Check if more evacuees need rescuing from source room
-            source_room_id = agent.evacuee_source_room
-            agent.complete_rescue()
-            
-            if source_room_id and source_room_id in self.env.rooms:
-                source_room = self.env.rooms[source_room_id]
-                if source_room.evacuees_remaining > 0:
-                    # Go back for more evacuees
-                    exit_id, path = self.decision_engine.get_path_to_exit(source_room_id)
-                    if exit_id and path:
-                        # Get path to source room first
-                        path_to_source = self.env.get_shortest_path(agent.current_room, source_room_id)
-                        if path_to_source:
-                            agent.evacuee_source_room = source_room_id
-                            agent.set_target(source_room_id, path_to_source)
-                            agent.state = AgentState.MOVING
-                            # Will pick up evacuee when arriving at source
-        
-        # Check if arriving at room with evacuees to pickup (returning for more)
-        elif (target_room.cleared and target_room.evacuees_remaining > 0 and 
-              not agent.carrying_evacuee and agent.evacuee_source_room == agent.target_room):
-            # Pick up evacuee and head to exit
-            exit_id, path = self.decision_engine.get_path_to_exit(agent.current_room)
-            if exit_id and path:
-                agent.start_rescuing(exit_id, path)
+            # Complete rescue and increment count
+            agent.evacuees_rescued += 1
+            agent.carrying_evacuee = False
+            agent.evacuee_source_room = None
+            agent.state = AgentState.IDLE
+            agent.clear_target()
+            # Agent becomes idle - will get new assignment next tick
         
         # Check if room needs searching
         elif not target_room.cleared and not target_room.is_exit:
@@ -268,15 +359,45 @@ class Simulator:
                          {'evacuees_found': evac_count})
             
             if evac_count > 0:
-                # Found evacuees - start rescue
+                # Found evacuees - log discovery
                 self.log_event(EventType.EVACUEE_FOUND, agent.id, agent.current_room,
                              {'count': evac_count})
+            
+            # Check if evacuees remaining (this agent or others may pick up)
+            if room.evacuees_remaining > 0:
+                # Pick up ONE evacuee (each agent picks up one)
+                room.rescue_evacuee()  # Decrement count immediately
+                agent.carrying_evacuee = True
+                agent.evacuee_source_room = agent.current_room
                 
-                # Get path to exit
-                exit_id, path = self.decision_engine.get_path_to_exit(agent.current_room)
-                if exit_id and path:
-                    agent.evacuee_source_room = agent.current_room
-                    agent.start_rescuing(exit_id, path)
+                # Get path to exit using grid pathfinding
+                if self.grid_pathfinder:
+                    # Find nearest exit
+                    nearest_exit = None
+                    min_dist = float('inf')
+                    for exit_id in self.env.exits:
+                        exit_room = self.env.rooms[exit_id]
+                        dist = abs(exit_room.x - agent.x) + abs(exit_room.y - agent.y)
+                        if dist < min_dist:
+                            min_dist = dist
+                            nearest_exit = exit_id
+                    
+                    if nearest_exit:
+                        exit_room = self.env.rooms[nearest_exit]
+                        grid_path = self.grid_pathfinder.find_path(
+                            agent.x, agent.y, exit_room.x, exit_room.y,
+                            avoid_danger=True, danger_threshold=0.8
+                        )
+                        if grid_path:
+                            agent.target_room = nearest_exit
+                            agent.waypoints = grid_path
+                            agent.current_waypoint = 0
+                            agent.state = AgentState.DRAGGING
+                else:
+                    # Fallback
+                    exit_id, path = self.decision_engine.get_path_to_exit(agent.current_room)
+                    if exit_id and path:
+                        agent.start_rescuing(exit_id, path)
     
     def _process_dragging(self, agent: Agent):
         """Process agent dragging evacuee to exit"""
@@ -290,26 +411,30 @@ class Simulator:
     
     def _check_completion(self):
         """Check if simulation should end"""
-        # Time cap reached
+        # All evacuees rescued - SUCCESS!
+        remaining_evac = self.env.get_remaining_evacuees()
+        if remaining_evac == 0:
+            self.complete = True
+            self.running = False
+            self.log_event(EventType.SIMULATION_END, None, None,
+                         {'reason': 'all_rescued', 'time': self.time})
+            return
+        
+        # All agents dead - FAILURE!
+        all_dead = all(a.is_dead for a in self.agent_manager.agents)
+        if all_dead:
+            self.complete = True
+            self.running = False
+            self.log_event(EventType.SIMULATION_END, None, None,
+                         {'reason': 'all_agents_dead', 'time': self.time})
+            return
+        
+        # Time cap reached (very high limit)
         if self.time >= self.time_cap:
             self.complete = True
             self.running = False
             self.log_event(EventType.SIMULATION_END, None, None,
-                         {'reason': 'time_cap', 'time': self.time})
-            return
-        
-        # All rooms cleared and no evacuees remaining
-        uncleared = self.env.get_uncleared_rooms()
-        remaining_evac = self.env.get_remaining_evacuees()
-        
-        # Check if all agents are idle and no work left
-        all_idle = all(a.state == AgentState.IDLE for a in self.agent_manager.agents)
-        
-        if not uncleared and remaining_evac == 0 and all_idle:
-            self.complete = True
-            self.running = False
-            self.log_event(EventType.SIMULATION_END, None, None,
-                         {'reason': 'complete', 'time': self.time})
+                         {'reason': 'time_limit', 'time': self.time})
     
     def run(self, max_ticks: Optional[int] = None):
         """
@@ -341,10 +466,14 @@ class Simulator:
         # Calculate success score S
         percent_rescued = rescued / total_evac if total_evac > 0 else 1.0
         percent_cleared = cleared_rooms / total_rooms if total_rooms > 0 else 1.0
-        time_factor = 1.0 - (self.time / self.time_cap)  # Better if faster
+        time_factor = (self.time / self.time_cap)
+        num_agents = self.params.get('agents', {}).get('count', 2)
         
-        success_score = (percent_rescued * 0.5 + percent_cleared * 0.3 + 
-                        time_factor * 0.2)
+        # Avoid division by zero at start
+        if time_factor > 0:
+            success_score = percent_rescued * percent_cleared / (time_factor * num_agents)
+        else:
+            success_score = 0.0
         
         return {
             'time': self.time,

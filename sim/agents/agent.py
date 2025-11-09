@@ -48,6 +48,13 @@ class Agent:
         self.path: List[str] = []
         self.path_index = 0
         
+        # Interpolated movement with waypoints (for doors)
+        self.target_x: Optional[float] = None
+        self.target_y: Optional[float] = None
+        self.moving_to_room = False
+        self.waypoints: List[Tuple[float, float]] = []  # Door waypoints
+        self.current_waypoint = 0
+        
         # Timing
         self.time_remaining_action = 0.0
         self.time_in_current_state = 0.0
@@ -61,6 +68,9 @@ class Agent:
         self.rooms_cleared = 0
         self.evacuees_rescued = 0
         self.cumulative_hazard_exposure = 0.0
+        
+        # Safety status
+        self.is_dead = False  # True if danger level > 0.95
         
         # History for visualization
         self.position_history: List[Tuple[float, float, int]] = [(x, y, floor)]
@@ -108,6 +118,42 @@ class Agent:
         self.position_history.append((x, y, floor))
         if len(self.position_history) > self.max_history_length:
             self.position_history.pop(0)
+    
+    def move_towards(self, target_x: float, target_y: float, speed: float, dt: float) -> bool:
+        """
+        Move agent towards target position with given speed
+        
+        Args:
+            target_x, target_y: Target position
+            speed: Movement speed in m/s
+            dt: Time delta in seconds
+            
+        Returns:
+            True if target reached, False otherwise
+        """
+        dx = target_x - self.x
+        dy = target_y - self.y
+        distance = (dx * dx + dy * dy) ** 0.5
+        
+        if distance < 0.1:  # Close enough (10cm threshold)
+            self.x = target_x
+            self.y = target_y
+            return True
+        
+        # Move towards target
+        move_dist = min(speed * dt, distance)
+        if distance > 0:
+            self.x += (dx / distance) * move_dist
+            self.y += (dy / distance) * move_dist
+        
+        self.total_distance_traveled += move_dist
+        
+        # Update history
+        self.position_history.append((self.x, self.y, self.floor))
+        if len(self.position_history) > self.max_history_length:
+            self.position_history.pop(0)
+        
+        return False
     
     def start_searching(self, service_time: float):
         """Begin searching current room"""
