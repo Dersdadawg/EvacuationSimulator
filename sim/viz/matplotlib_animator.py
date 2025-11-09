@@ -745,21 +745,30 @@ class MatplotlibAnimator:
         # Count deaths
         deaths = sum(1 for a in self.sim.agent_manager.agents if a.is_dead)
         
-        # Beautiful end stats - remove emojis that cause font warnings
+        # Beautiful end stats with SUCCESS RATE FORMULA
+        success_rate = rescued_pct / 100.0  # Convert to decimal
+        total_time = self.sim.time
+        
         stats = (
             f"{title}\n"
-            f"{'═' * 40}\n"
+            f"{'═' * 50}\n"
             f"{outcome}\n"
             f"\n"
-            f"Time: {self.sim.time:.0f}s ({self.sim.time/60:.1f} min)\n"
-            f"Rescued: {results['evacuees_rescued']}/{results['total_evacuees']} ({rescued_pct:.0f}%)\n"
-            f"Cleared: {results['rooms_cleared']}/{results['total_rooms']} ({cleared_pct:.0f}%)\n"
-            f"Deaths: {deaths}/2\n"
-            f"Max Fire: {results['max_hazard']:.0%}\n"
+            f"FINAL RESULTS:\n"
+            f"{'─' * 50}\n"
+            f"Time Elapsed: {total_time:.0f}s ({total_time/60:.1f} min)\n"
+            f"Evacuees Rescued: {results['evacuees_rescued']}/{results['total_evacuees']}\n"
+            f"Rooms Cleared: {results['rooms_cleared']}/{results['total_rooms']}\n"
+            f"Responders Lost: {deaths}/2\n"
+            f"Max Hazard: {results['max_hazard']:.0%}\n"
             f"\n"
-            f"SUCCESS RATE: {rescued_pct:.1f}%\n"
-            f"SCORE: {results['success_score']:.3f}\n"
+            f"SUCCESS RATE FORMULA:\n"
+            f"SR = (Rescued / Total) × 100\n"
+            f"SR = ({results['evacuees_rescued']} / {results['total_evacuees']}) × 100\n"
             f"\n"
+            f"SUCCESS RATE = {rescued_pct:.1f}%\n"
+            f"SUCCESS SCORE = {results['success_score']:.3f}\n"
+            f"{'═' * 50}\n"
             f"Press ESC to close"
         )
         
