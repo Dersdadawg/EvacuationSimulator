@@ -117,7 +117,8 @@ class MatplotlibAnimator:
         
         # Animation state
         self.paused = True
-        self.speed = 3  # 3x speed!
+        self.speed = 1.0  # Speed multiplier (0.1 to 5.0)
+        self.step_accumulator = 0.0  # For fractional speed handling
         self.anim = None
         
         # Connect keyboard events
@@ -454,17 +455,17 @@ class MatplotlibAnimator:
             self.current_floor = max(self.current_floor - 1, min(self.sim.env.floors.keys()))
             self._redraw_all()
         elif event.key == 'j':
-            # Slow down
-            self.speed = max(1, self.speed - 1)
-            print(f'Speed: {self.speed}x')
+            # Slow down (0.1 intervals, min 0.1)
+            self.speed = max(0.1, round(self.speed - 0.1, 1))
+            print(f'Speed: {self.speed:.1f}x')
             # Update animation interval to reflect new speed
             if hasattr(self, 'anim') and self.anim:
                 new_interval = (1000 / self.fps) / self.speed
                 self.anim.event_source.interval = new_interval
         elif event.key == 'l':
-            # Speed up
-            self.speed = min(10, self.speed + 1)
-            print(f'Speed: {self.speed}x')
+            # Speed up (0.1 intervals, max 5.0)
+            self.speed = min(5.0, round(self.speed + 0.1, 1))
+            print(f'Speed: {self.speed:.1f}x')
             # Update animation interval to reflect new speed
             if hasattr(self, 'anim') and self.anim:
                 new_interval = (1000 / self.fps) / self.speed
@@ -503,7 +504,12 @@ class MatplotlibAnimator:
         """Update animation frame"""
         # Run simulation
         if not self.paused and not self.sim.complete:
-            for _ in range(self.speed):
+            # Handle fractional speeds (0.1 to 5.0)
+            self.step_accumulator += self.speed
+            steps_to_take = int(self.step_accumulator)
+            self.step_accumulator -= steps_to_take
+            
+            for _ in range(steps_to_take):
                 if not self.sim.complete:
                     self.sim.step()
         
@@ -676,7 +682,7 @@ class MatplotlibAnimator:
             f"Time: {self.sim.time:.1f}s  |  Floor: {self.current_floor}  |  "
             f"Rescued: {results['evacuees_rescued']}/{results['total_evacuees']} ({rescued_pct:.0f}%)\n"
             f"Rooms Cleared: {results['rooms_cleared']}/{results['total_rooms']} ({cleared_pct:.0f}%)  |  "
-            f"Score: {results['success_score']:.3f}  |  Speed: {self.speed}x\n"
+            f"Score: {results['success_score']:.3f}  |  Speed: {self.speed:.1f}x\n"
             f"Status: {status}\n"
             f"{'─' * 60}\n"
             f"Controls: SPACE=Play/Pause  |  J/L=Speed  |  ESC=Quit"
