@@ -455,15 +455,13 @@ class MatplotlibAnimator:
             self.current_floor = max(self.current_floor - 1, min(self.sim.env.floors.keys()))
             self._redraw_all()
         elif event.key == 'j':
-            # Slow down (0.1 intervals, min 0.1)
-            self.speed = max(0.1, round(self.speed - 0.1, 1))
+            # Slow down (0.5 intervals, min 0.5)
+            self.speed = max(0.5, self.speed - 0.5)
             print(f'Speed: {self.speed:.1f}x')
-            # Don't update interval - just change steps per frame
         elif event.key == 'l':
-            # Speed up (0.1 intervals, max 5.0)
-            self.speed = min(5.0, round(self.speed + 0.1, 1))
+            # Speed up (0.5 intervals, max 5.0)
+            self.speed = min(5.0, self.speed + 0.5)
             print(f'Speed: {self.speed:.1f}x')
-            # Don't update interval - just change steps per frame
     
     def _redraw_all(self):
         """Redraw everything for floor changes"""
