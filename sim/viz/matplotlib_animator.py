@@ -309,20 +309,13 @@ class MatplotlibAnimator:
             else:
                 priority = 1  # Non-offices don't get colored
             
-            if priority == 0.0 and room.evacuees_remaining == 0:
-                # EVACUATED ROOMS: LIGHT GREEN FILL
-                edge_color = '#388E3C'  # Green
+            if priority == 0.0:
+                # ZERO PRIORITY: LIGHT BLUE (evacuated OR blocked - don't care)
+                edge_color = '#1976D2'  # Blue
                 edge_width = 4.0
-                facecolor = '#81C784'  # Light green
+                facecolor = '#90CAF9'  # Light blue
                 fill = True
-                alpha = 0.75
-            elif priority == 0.0 and room.evacuees_remaining > 0:
-                # BLOCKED BY FIRE: BRIGHT PINK FILL
-                edge_color = '#C2185B'  # Dark pink
-                edge_width = 4.0
-                facecolor = '#F06292'  # Bright pink
-                fill = True
-                alpha = 0.85
+                alpha = 0.7
             elif room.is_exit:
                 edge_color = '#2E7D32'  # Dark green
                 edge_width = 3.0
