@@ -54,16 +54,16 @@ class DecisionEngine:
     
     def calculate_priority_index(self, room_id: str, agent_position: str) -> float:
         """
-        Calculate room priority - FIXED to actually prioritize fire rooms!
+        Calculate room priority with GRANULAR values (not just integers!)
         
-        Intuitive formula: P_i(t) = A_i(t) * E_i(t) * (1 + λ * D_i(t))
+        More granular formula: P_i(t) = A_i * (E_i + λ*D_i*100)
         
         Args:
             room_id: Room to evaluate
             agent_position: Current agent position for accessibility check
             
         Returns:
-            Priority index value
+            Priority index value (granular, not rounded to integers)
         """
         room = self.env.rooms[room_id]
         
@@ -81,14 +81,16 @@ class DecisionEngine:
         # D_i(t): Average danger level [0, 1]
         D_i = room.hazard
         
-        # λ: Multiplier for danger (higher λ = more weight on danger)
-        lambda_val = 10.0  # Fire rooms get 10x higher priority!
+        # λ: Weight for danger component
+        lambda_val = 50.0  # Makes danger highly significant!
         
-        # WORKING FORMULA: Higher danger = MUCH higher priority
-        # When D=0: P = A × E × 1 = baseline priority
-        # When D=0.5: P = A × E × 6 = 6x higher!
-        # When D=1: P = A × E × 11 = 11x higher!
-        priority = A_i * E_i * (1.0 + lambda_val * D_i)
+        # GRANULAR FORMULA: Danger contributes significantly
+        # E_i = 2, D=0.00: P = 1 × (2 + 0)    = 2.0
+        # E_i = 2, D=0.05: P = 1 × (2 + 2.5)  = 4.5  ← Granular!
+        # E_i = 2, D=0.10: P = 1 × (2 + 5.0)  = 7.0
+        # E_i = 2, D=0.50: P = 1 × (2 + 25.0) = 27.0
+        # E_i = 2, D=1.00: P = 1 × (2 + 50.0) = 52.0
+        priority = A_i * (E_i + lambda_val * D_i)
         
         return priority
     

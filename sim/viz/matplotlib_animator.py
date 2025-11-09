@@ -355,10 +355,10 @@ class MatplotlibAnimator:
                         room.id, first_agent.current_room
                     )
                     
-                    # Display priority with modern styling
+                    # Display priority with modern styling (2 decimals for granularity)
                     priority_text = self.ax.text(
                         room.x, room.y + 3, 
-                        f'P = {priority:.1f}',
+                        f'P = {priority:.2f}',
                         ha='center', va='center',
                         fontsize=11, fontweight='600',
                         fontfamily='sans-serif',
@@ -388,10 +388,10 @@ class MatplotlibAnimator:
                     room.id, first_agent.current_room
                 )
                 
-                # Display priority with modern styling
+                # Display priority with modern styling (2 decimals for granularity)
                 priority_text = self.ax.text(
                     room.x, room.y + 2, 
-                    f'P = {priority:.1f}',
+                    f'P = {priority:.2f}',
                     ha='center', va='center',
                     fontsize=10, fontweight='500',
                     fontfamily='sans-serif',
@@ -458,18 +458,12 @@ class MatplotlibAnimator:
             # Slow down (0.1 intervals, min 0.1)
             self.speed = max(0.1, round(self.speed - 0.1, 1))
             print(f'Speed: {self.speed:.1f}x')
-            # Update animation interval to reflect new speed
-            if hasattr(self, 'anim') and self.anim:
-                new_interval = (1000 / self.fps) / self.speed
-                self.anim.event_source.interval = new_interval
+            # Don't update interval - just change steps per frame
         elif event.key == 'l':
             # Speed up (0.1 intervals, max 5.0)
             self.speed = min(5.0, round(self.speed + 0.1, 1))
             print(f'Speed: {self.speed:.1f}x')
-            # Update animation interval to reflect new speed
-            if hasattr(self, 'anim') and self.anim:
-                new_interval = (1000 / self.fps) / self.speed
-                self.anim.event_source.interval = new_interval
+            # Don't update interval - just change steps per frame
     
     def _redraw_all(self):
         """Redraw everything for floor changes"""
