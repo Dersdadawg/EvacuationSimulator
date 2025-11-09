@@ -104,16 +104,19 @@ class DecisionEngine:
         else:
             distance = 0.0
         
-        # λ: Danger multiplier
-        lambda_val = 200.0  # High danger sensitivity
+        # Use minimum distance of 5m to prevent priority spikes when agent in room
+        distance = max(distance, 5.0)
         
-        # GRANULAR FORMULA with distance decay
-        # Base = 100, Danger boost = λ*D_i, Distance penalty = distance/10
-        # E=2, D=0.00, dist=10: P = 2 × 100 / 2.0 = 100.00
-        # E=2, D=0.05, dist=10: P = 2 × 110 / 2.0 = 110.00 ← Granular!
-        # E=2, D=0.20, dist=10: P = 2 × 140 / 2.0 = 140.00 ← Fire room!
-        numerator = E_i * (100.0 + lambda_val * D_i)
-        denominator = 1.0 + distance / 10.0
+        # λ: Danger multiplier
+        lambda_val = 10.0  # Danger weight
+        
+        # SIMPLE GRANULAR FORMULA: P = E × (10 + λ×D) / (dist/10)
+        # Keeps priorities in reasonable range (not 100s!)
+        # E=2, D=0.00, dist=10: P = 2×10 / 1.0 = 20.00
+        # E=2, D=0.20, dist=10: P = 2×12 / 1.0 = 24.00 ← Fire room slightly higher
+        # E=5, D=0.20, dist=10: P = 5×12 / 1.0 = 60.00 ← More people = higher!
+        numerator = E_i * (10.0 + lambda_val * D_i)
+        denominator = distance / 10.0
         priority = A_i * numerator / denominator
         
         return priority

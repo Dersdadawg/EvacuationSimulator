@@ -123,8 +123,8 @@ class MatplotlibAnimator:
                                      bbox=info_bbox, linespacing=1.5)
         
         # Animation state
-        self.paused = True
-        self.speed = 1  # Speed multiplier (1 to 5, integer steps only)
+        self.paused = False  # Start unpaused
+        self.speed = 10  # Start at 10x speed!
         self.anim = None
         
         # Connect keyboard events
@@ -218,14 +218,23 @@ class MatplotlibAnimator:
                 if not room_at_cell or room_at_cell.floor != self.current_floor:
                     continue
                 
-                # Check if cell is in zero-priority room (LIGHT GREEN!)
+                # Check if cell is in zero-priority room
                 if cell.room_id in zero_priority_rooms and not cell.is_burning:
+                    # Distinguish: GREEN if evacuated, RED if entrance blocked
+                    room = self.sim.env.rooms[cell.room_id]
+                    if room.evacuees_remaining == 0:
+                        # LIGHT GREEN - Everyone rescued!
+                        color = '#A5D6A7'
+                    else:
+                        # LIGHT RED - Entrance blocked by fire, can't rescue!
+                        color = '#FFCCCC'
+                    
                     cell_size = self.grid_resolution
                     rect = patches.Rectangle(
                         (x - cell_size/2, y - cell_size/2),
                         cell_size,
                         cell_size,
-                        facecolor='#A5D6A7',  # Light green - EVACUATED!
+                        facecolor=color,
                         edgecolor='none',
                         alpha=0.6,
                         zorder=10
@@ -499,7 +508,7 @@ class MatplotlibAnimator:
                     print(f'[SPEED] {self.speed}x', flush=True)
             elif event.key == 'l':
                 # Speed up
-                if self.speed < 5:
+                if self.speed < 10:
                     self.speed += 1
                     print(f'[SPEED] {self.speed}x', flush=True)
         except Exception as e:
