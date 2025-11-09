@@ -442,25 +442,30 @@ class MatplotlibAnimator:
                 rect.set_alpha(0.7)
     
     def _on_key(self, event):
-        """Handle keyboard events"""
-        if event.key == ' ':
-            self.paused = not self.paused
-        elif event.key == 'escape':
-            plt.close(self.fig)
-        elif event.key == 'up':
-            self.current_floor = min(self.current_floor + 1, max(self.sim.env.floors.keys()))
-            self._redraw_all()
-        elif event.key == 'down':
-            self.current_floor = max(self.current_floor - 1, min(self.sim.env.floors.keys()))
-            self._redraw_all()
-        elif event.key == 'j':
-            # Slow down (integer steps, min 1)
-            self.speed = max(1, self.speed - 1)
-            print(f'Speed: {self.speed}x')
-        elif event.key == 'l':
-            # Speed up (integer steps, max 5)
-            self.speed = min(5, self.speed + 1)
-            print(f'Speed: {self.speed}x')
+        """Handle keyboard events - MUST be non-blocking!"""
+        try:
+            if event.key == ' ':
+                self.paused = not self.paused
+            elif event.key == 'escape':
+                plt.close(self.fig)
+            elif event.key == 'up':
+                self.current_floor = min(self.current_floor + 1, max(self.sim.env.floors.keys()))
+                self._redraw_all()
+            elif event.key == 'down':
+                self.current_floor = max(self.current_floor - 1, min(self.sim.env.floors.keys()))
+                self._redraw_all()
+            elif event.key == 'j':
+                # Slow down
+                if self.speed > 1:
+                    self.speed -= 1
+                    print(f'[SPEED] {self.speed}x', flush=True)
+            elif event.key == 'l':
+                # Speed up
+                if self.speed < 5:
+                    self.speed += 1
+                    print(f'[SPEED] {self.speed}x', flush=True)
+        except Exception as e:
+            print(f'[KEY ERROR] {e}', flush=True)
     
     def _redraw_all(self):
         """Redraw everything for floor changes"""
