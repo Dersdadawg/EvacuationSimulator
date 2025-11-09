@@ -196,6 +196,18 @@ class MatplotlibAnimator:
         if hasattr(self.sim.env.hazard_system, 'cells'):
             cells = self.sim.env.hazard_system.cells
             
+            # Get rooms with priority = 0 for LIGHT GREEN cells
+            zero_priority_rooms = set()
+            if self.sim.agent_manager.agents:
+                first_agent = self.sim.agent_manager.agents[0]
+                for room_id, room in self.sim.env.rooms.items():
+                    if hasattr(room, 'type') and room.type == 'office':
+                        priority = self.sim.decision_engine.calculate_priority_index(
+                            room_id, first_agent.current_room
+                        )
+                        if priority == 0.0:
+                            zero_priority_rooms.add(room_id)
+            
             # Debug: Print fire info
             burning = sum(1 for c in cells.values() if c.is_burning)
             drawn_count = 0
@@ -204,6 +216,23 @@ class MatplotlibAnimator:
                 # Check if cell is on current floor
                 room_at_cell = self.sim.env.rooms.get(cell.room_id)
                 if not room_at_cell or room_at_cell.floor != self.current_floor:
+                    continue
+                
+                # Check if cell is in zero-priority room (LIGHT GREEN!)
+                if cell.room_id in zero_priority_rooms and not cell.is_burning:
+                    cell_size = self.grid_resolution
+                    rect = patches.Rectangle(
+                        (x - cell_size/2, y - cell_size/2),
+                        cell_size,
+                        cell_size,
+                        facecolor='#A5D6A7',  # Light green - EVACUATED!
+                        edgecolor='none',
+                        alpha=0.6,
+                        zorder=10
+                    )
+                    self.cell_heatmap_patches.append(rect)
+                    self.ax.add_patch(rect)
+                    drawn_count += 1
                     continue
                 
                 # WHITE -> RED COLORMAP with SHADERS

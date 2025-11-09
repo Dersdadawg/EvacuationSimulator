@@ -67,8 +67,11 @@ class DecisionEngine:
         """
         room = self.env.rooms[room_id]
         
-        # If already cleared or no evacuees, priority = 0
-        if room.cleared or room.evacuees_remaining == 0:
+        # E_i(t): Expected number of evacuees
+        E_i = float(room.evacuees_remaining)
+        
+        # If no evacuees, priority = 0
+        if E_i == 0:
             return 0.0
         
         # A_i(t): Accessibility (1 if accessible, 0 if not)
@@ -78,8 +81,18 @@ class DecisionEngine:
         if A_i == 0.0:
             return 0.0
         
-        # E_i(t): Expected number of evacuees
-        E_i = float(room.evacuees_remaining)
+        # Check if door is on fire (CRITICAL: can't enter if door is burning!)
+        if hasattr(self.env, 'hazard_system') and self.env.hazard_system:
+            # Get door position (center of wall facing hallway)
+            door_x = room.x
+            door_y = room.y + room.height / 2.0 if room.y < 17 else room.y - 0.5
+            
+            # Check if door cell is burning
+            door_cell_key = (round(door_x / 0.5) * 0.5 + 0.25, round(door_y / 0.5) * 0.5 + 0.25)
+            if door_cell_key in self.env.hazard_system.cells:
+                door_cell = self.env.hazard_system.cells[door_cell_key]
+                if door_cell.is_burning or door_cell.danger_level > 0.9:
+                    return 0.0  # Door blocked by fire!
         
         # D_i(t): Average danger level [0, 1]
         D_i = room.hazard
