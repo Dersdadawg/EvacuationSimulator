@@ -774,30 +774,35 @@ class MatplotlibAnimator:
         # Count deaths
         deaths = sum(1 for a in self.sim.agent_manager.agents if a.is_dead)
         
-        # Beautiful end stats with SUCCESS RATE FORMULA
-        success_rate = rescued_pct / 100.0  # Convert to decimal
+        # Beautiful end stats with CORRECT SUCCESS RATE FORMULA
+        survivors = results['evacuees_rescued']
+        avg_priority = results.get('avg_priority', 100.0)
         total_time = self.sim.time
+        num_responders = results.get('num_responders', 2)
+        success_rate = results['success_score']
         
         stats = (
             f"{title}\n"
-            f"{'═' * 50}\n"
+            f"{'═' * 55}\n"
             f"{outcome}\n"
             f"\n"
             f"FINAL RESULTS:\n"
-            f"{'─' * 50}\n"
-            f"Time Elapsed: {total_time:.0f}s ({total_time/60:.1f} min)\n"
-            f"Evacuees Rescued: {results['evacuees_rescued']}/{results['total_evacuees']}\n"
-            f"Rooms Cleared: {results['rooms_cleared']}/{results['total_rooms']}\n"
-            f"Responders Lost: {deaths}/2\n"
+            f"{'─' * 55}\n"
+            f"Time: {total_time:.0f}s ({total_time/60:.1f} min)\n"
+            f"Rescued: {survivors}/{results['total_evacuees']}\n"
+            f"Cleared: {results['rooms_cleared']}/{results['total_rooms']}\n"
+            f"Deaths: {deaths}/{num_responders}\n"
             f"Max Hazard: {results['max_hazard']:.0%}\n"
             f"\n"
             f"SUCCESS RATE FORMULA:\n"
-            f"SR = (Rescued / Total) × 100\n"
-            f"SR = ({results['evacuees_rescued']} / {results['total_evacuees']}) × 100\n"
+            f"SR = (Survivors × Avg_Priority) / (Time × Responders)\n"
             f"\n"
-            f"SUCCESS RATE = {rescued_pct:.1f}%\n"
-            f"SUCCESS SCORE = {results['success_score']:.3f}\n"
-            f"{'═' * 50}\n"
+            f"SR = ({survivors} × {avg_priority:.2f}) / ({total_time:.0f} × {num_responders})\n"
+            f"SR = {survivors * avg_priority:.2f} / {total_time * num_responders:.0f}\n"
+            f"\n"
+            f"SUCCESS RATE = {success_rate:.4f}\n"
+            f"{'═' * 55}\n"
+            f"Use this to evaluate weights (0.6, 0.25, 0.15)\n"
             f"Press ESC to close"
         )
         

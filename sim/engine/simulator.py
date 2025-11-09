@@ -319,9 +319,16 @@ class Simulator:
         
         # Check if this is exit delivery
         if target_room.is_exit and agent.carrying_evacuee:
-            # Log rescue (evacuee already removed when picked up)
+            # Calculate priority of rescued evacuee's room
+            rescue_priority = 0.0
+            if agent.evacuee_source_room:
+                rescue_priority = self.decision_engine.calculate_priority_index(
+                    agent.evacuee_source_room, agent.current_room
+                )
+            
+            # Log rescue with priority for success rate calculation
             self.log_event(EventType.EVACUEE_RESCUED, agent.id, agent.target_room,
-                         {'source_room': agent.evacuee_source_room})
+                         {'source_room': agent.evacuee_source_room, 'priority': rescue_priority})
             
             # Complete rescue and increment count
             agent.evacuees_rescued += 1
@@ -463,17 +470,27 @@ class Simulator:
         cleared_rooms = len([r for r in self.env.rooms.values() 
                             if r.cleared])
         
-        # Calculate success score S
-        percent_rescued = rescued / total_evac if total_evac > 0 else 1.0
-        percent_cleared = cleared_rooms / total_rooms if total_rooms > 0 else 1.0
-        time_factor = (self.time / self.time_cap)
+        # Calculate SUCCESS RATE using CORRECT formula:
+        # SR = (Survivors × Avg_Priority) / (Time × Responders)
         num_agents = self.params.get('agents', {}).get('count', 2)
         
-        # Avoid division by zero at start
-        if time_factor > 0:
-            success_score = percent_rescued * percent_cleared / (time_factor * num_agents)
+        # Get average rescue priority from events
+        rescue_events = [e for e in self.events if e.event_type == EventType.EVACUEE_RESCUED]
+        if rescue_events:
+            priorities = [e.data.get('priority', 100.0) for e in rescue_events]
+            avg_priority = sum(priorities) / len(priorities)
+        else:
+            avg_priority = 100.0  # Default baseline
+        
+        # SUCCESS RATE formula
+        if self.time > 0 and num_agents > 0:
+            success_score = (rescued * avg_priority) / (self.time * num_agents)
         else:
             success_score = 0.0
+        
+        # Legacy metrics
+        percent_rescued = rescued / total_evac if total_evac > 0 else 1.0
+        percent_cleared = cleared_rooms / total_rooms if total_rooms > 0 else 1.0
         
         return {
             'time': self.time,
@@ -485,6 +502,8 @@ class Simulator:
             'rooms_cleared': cleared_rooms,
             'percent_cleared': percent_cleared * 100,
             'success_score': success_score,
+            'avg_priority': avg_priority,  # For displaying formula
+            'num_responders': num_agents,
             'avg_hazard_exposure': self.agent_manager.get_average_hazard_exposure(),
             'max_hazard': self.env.hazard_system.get_max_hazard(),
             'agents': self.agent_manager.get_all_stats()
