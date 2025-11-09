@@ -231,8 +231,8 @@ class MatplotlibAnimator:
                         alpha = 0.6
                     else:
                         # BRIGHT PINK - Entrance blocked by fire, can't rescue!
-                        color = '#FF69B4'  # Hot pink for visibility
-                        alpha = 0.85  # More opaque
+                        color = '#FF1493'  # Deep pink for maximum visibility
+                        alpha = 0.95  # Nearly opaque
                     
                     cell_size = self.grid_resolution
                     rect = patches.Rectangle(
@@ -240,9 +240,10 @@ class MatplotlibAnimator:
                         cell_size,
                         cell_size,
                         facecolor=color,
-                        edgecolor='none',
+                        edgecolor='#FF1493',  # Pink border for emphasis
+                        linewidth=1.5,
                         alpha=alpha,
-                        zorder=10
+                        zorder=12  # Higher than fire cells
                     )
                     self.cell_heatmap_patches.append(rect)
                     self.ax.add_patch(rect)
@@ -765,14 +766,10 @@ class MatplotlibAnimator:
             f"Controls: SPACE=Play/Pause  |  J/L=Speed  |  ESC=Quit"
         )
         
-        # Only show end screen when PAUSED (not automatically)
-        if self.paused:
-            if self.sim.complete:
-                # Show end screen only when paused
-                self._show_end_screen(results)
-            elif hasattr(self, '_end_screen_shown'):
-                # Hide end screen when resuming
-                self._hide_end_screen()
+        # Show end screen when complete (auto-pause)
+        if self.sim.complete:
+            self._show_end_screen(results)
+            self.paused = True
         
         self.info_text.set_text(info)
         

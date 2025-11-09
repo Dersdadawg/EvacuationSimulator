@@ -172,6 +172,10 @@ class Simulator:
             # Agent is waiting for stair
             self._process_queued(agent)
         
+        elif agent.state == AgentState.ESCAPING:
+            # Agent is escaping to exit - process like MOVING
+            self._process_movement(agent)
+        
         # Accumulate hazard exposure
         current_room = self.env.rooms[agent.current_room]
         agent.accumulate_hazard_exposure(current_room.hazard, self.dt)
@@ -200,7 +204,8 @@ class Simulator:
                         best_room = room_id
                         best_path = grid_path
             
-            if best_room and best_path:
+            # If best_priority <= 0, ALL rooms are blocked or cleared - escape!
+            if best_room and best_path and best_priority > 0:
                 agent.target_room = best_room
                 agent.waypoints = best_path
                 agent.current_waypoint = 0
@@ -208,7 +213,8 @@ class Simulator:
                 self.log_event(EventType.AGENT_MOVE, agent.id, agent.current_room,
                              {'target': best_room, 'priority': best_priority})
             else:
-                # No rescuable rooms! Agent should escape to nearest exit
+                # No rescuable rooms (priority=0 or no path)! Agent should escape to nearest exit
+                print(f'[ESCAPE] Agent {agent.id} escaping - best_priority={best_priority:.2f}, best_room={best_room}')
                 self._assign_escape_route(agent)
         else:
             # Fallback to room-based
@@ -246,8 +252,11 @@ class Simulator:
             agent.waypoints = best_path
             agent.current_waypoint = 0
             agent.state = AgentState.ESCAPING
+            print(f'[ESCAPE] Agent {agent.id} routing to exit {nearest_exit} via {len(best_path)} waypoints')
             self.log_event(EventType.AGENT_MOVE, agent.id, agent.current_room,
                          {'target': nearest_exit, 'action': 'escaping'})
+        else:
+            print(f'[ESCAPE] Agent {agent.id} CANNOT find safe path to any exit!')
     
     def _process_movement(self, agent: Agent):
         """Process agent movement along grid waypoints or room path"""
