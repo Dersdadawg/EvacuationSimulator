@@ -51,8 +51,8 @@ class MatplotlibAnimator:
         self.sim = simulator
         self.fps = fps
         
-        # Create figure with modern styling - LARGE SIZE
-        self.fig = plt.figure(figsize=(22, 13), facecolor=self.COLORS['bg'])
+        # Create figure with modern styling - LARGE SIZE, wider for map
+        self.fig = plt.figure(figsize=(26, 14), facecolor=self.COLORS['bg'])
         
         # Beautiful title with gradient-like effect
         title = self.fig.suptitle('FIRE EVACUATION SIMULATION', 
@@ -65,8 +65,9 @@ class MatplotlibAnimator:
                                   linewidth=0,
                                   alpha=1.0))
         
-        # Main plot area
+        # Main plot area - larger, left side
         self.ax = self.fig.add_subplot(111)
+        self.ax.set_position([0.05, 0.05, 0.75, 0.88])  # [left, bottom, width, height]
         self.ax.set_facecolor(self.COLORS['white'])
         
         # Setup plot with modern styling
@@ -111,6 +112,7 @@ class MatplotlibAnimator:
         self.wall_renderer.draw_walls()
         
         self._add_fire_legend()  # Add colorbar legend
+        self._add_status_legend()  # Add room status legend
         
         # Agent trail history
         self.trail_length = 30
@@ -178,6 +180,31 @@ class MatplotlibAnimator:
             transform=self.ax.transAxes,
             ha='right', va='top',
             fontsize=12, fontweight='600',
+            fontfamily='sans-serif',
+            color='#212121',
+            bbox=dict(boxstyle='round,pad=1.0', 
+                     facecolor='#FFFFFF', 
+                     edgecolor='#BDBDBD', 
+                     linewidth=2, alpha=0.95),
+            zorder=100
+        )
+    
+    def _add_status_legend(self):
+        """Add room status legend on the right side"""
+        status_text = self.ax.text(
+            0.98, 0.50, 
+            'ROOM STATUS\n'
+            '━━━━━━━━━━\n'
+            '🟢 Evacuated\n'
+            '   (All clear)\n\n'
+            '🔵 Blocked\n'
+            '   (Fire blocks\n'
+            '    entrance)\n\n'
+            '⬜ Active\n'
+            '   (Needs rescue)',
+            transform=self.ax.transAxes,
+            ha='right', va='center',
+            fontsize=11, fontweight='600',
             fontfamily='sans-serif',
             color='#212121',
             bbox=dict(boxstyle='round,pad=1.0', 
@@ -309,13 +336,20 @@ class MatplotlibAnimator:
             else:
                 priority = 1  # Non-offices don't get colored
             
-            if priority == 0.0:
-                # ZERO PRIORITY: LIGHT BLUE (evacuated OR blocked - don't care)
+            if priority == 0.0 and room.evacuees_remaining == 0:
+                # EVACUATED: LIGHT GREEN
+                edge_color = '#388E3C'  # Green
+                edge_width = 4.0
+                facecolor = '#81C784'  # Light green
+                fill = True
+                alpha = 0.75
+            elif priority == 0.0 and room.evacuees_remaining > 0:
+                # BLOCKED: LIGHT BLUE
                 edge_color = '#1976D2'  # Blue
                 edge_width = 4.0
                 facecolor = '#90CAF9'  # Light blue
                 fill = True
-                alpha = 0.7
+                alpha = 0.75
             elif room.is_exit:
                 edge_color = '#2E7D32'  # Dark green
                 edge_width = 3.0
@@ -469,6 +503,9 @@ class MatplotlibAnimator:
         try:
             if event.key == ' ':
                 self.paused = not self.paused
+                # If resuming and end screen was shown, hide it
+                if not self.paused and hasattr(self, '_end_screen_shown'):
+                    self._hide_end_screen()
             elif event.key == 'escape':
                 plt.close(self.fig)
             elif event.key == 'up':
