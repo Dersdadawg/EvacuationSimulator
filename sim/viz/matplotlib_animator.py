@@ -97,6 +97,7 @@ class MatplotlibAnimator:
         self.agent_dots = []
         self.evacuee_dots = []
         self.agent_trails = []
+        self.persistent_trails = []  # Never cleared - shows full path
         self.grid_lines = []
         
         self._update_bounds()
@@ -113,6 +114,7 @@ class MatplotlibAnimator:
         # Agent trail history
         self.trail_length = 30
         self.agent_positions = {i: [] for i in range(len(self.sim.agent_manager.agents))}
+        self.full_agent_positions = {i: [] for i in range(len(self.sim.agent_manager.agents))}  # Never cleared
         
         # Modern info panel - lower position to avoid title overlap
         info_bbox = dict(boxstyle='round,pad=0.8', facecolor=self.COLORS['white'], 
@@ -560,10 +562,13 @@ class MatplotlibAnimator:
             dot.remove()
         for line in self.agent_trails:
             line.remove()
+        for line in self.persistent_trails:
+            line.remove()
         
         self.agent_dots = []
         self.evacuee_dots = []
         self.agent_trails = []
+        self.persistent_trails = []
         
         # Clear and redraw priority labels
         for label in self.priority_labels:
@@ -589,12 +594,24 @@ class MatplotlibAnimator:
             
             color = self.COLORS['agent_colors'][agent.id % len(self.COLORS['agent_colors'])]
             
-            # Update trail
-            self.agent_positions[agent.id].append((agent.x, agent.y))
+            # Update trails
+            current_pos = (agent.x, agent.y)
+            self.agent_positions[agent.id].append(current_pos)
+            self.full_agent_positions[agent.id].append(current_pos)
+            
             if len(self.agent_positions[agent.id]) > self.trail_length:
                 self.agent_positions[agent.id].pop(0)
             
-            # Draw trail
+            # Draw persistent thin trail (FULL PATH - never fades)
+            if len(self.full_agent_positions[agent.id]) > 1:
+                full_trail = np.array(self.full_agent_positions[agent.id])
+                persistent_line, = self.ax.plot(full_trail[:, 0], full_trail[:, 1], 
+                                    color=color, alpha=0.15, 
+                                    linewidth=0.8, solid_capstyle='round', 
+                                    zorder=7)
+                self.persistent_trails.append(persistent_line)
+            
+            # Draw fading trail (recent movement only)
             if len(self.agent_positions[agent.id]) > 1:
                 trail = np.array(self.agent_positions[agent.id])
                 line, = self.ax.plot(trail[:, 0], trail[:, 1], 
@@ -735,7 +752,7 @@ class MatplotlibAnimator:
         
         self.info_text.set_text(info)
         
-        return self.agent_dots + self.evacuee_dots + self.agent_trails + [self.info_text]
+        return self.agent_dots + self.evacuee_dots + self.persistent_trails + self.agent_trails + [self.info_text]
     
     def _show_end_screen(self, results):
         """Display beautiful end screen with full statistics"""
