@@ -48,7 +48,7 @@
       "width": 15.64,
       "height": 12.68,
       "area": 198.3,
-      "evacuees": 2,
+      "evacuees": 5,
       "is_exit": false,
       "is_stair": false,
       "type": "office"
@@ -61,7 +61,7 @@
       "width": 15.64,
       "height": 12.68,
       "area": 198.3,
-      "evacuees": 1,
+      "evacuees": 3,
       "is_exit": false,
       "is_stair": false,
       "type": "office"
@@ -74,7 +74,7 @@
       "width": 15.64,
       "height": 12.68,
       "area": 198.3,
-      "evacuees": 1,
+      "evacuees": 2,
       "is_exit": false,
       "is_stair": false,
       "type": "office"
@@ -87,7 +87,7 @@
       "width": 15.64,
       "height": 12.68,
       "area": 198.3,
-      "evacuees": 1,
+      "evacuees": 4,
       "is_exit": false,
       "is_stair": false,
       "type": "office"
@@ -100,7 +100,7 @@
       "width": 15.64,
       "height": 12.68,
       "area": 198.3,
-      "evacuees": 2,
+      "evacuees": 1,
       "is_exit": false,
       "is_stair": false,
       "type": "office"
@@ -113,7 +113,7 @@
       "width": 15.64,
       "height": 12.68,
       "area": 198.3,
-      "evacuees": 1,
+      "evacuees": 2,
       "is_exit": false,
       "is_stair": false,
       "type": "office"

@@ -361,10 +361,11 @@ class MatplotlibAnimator:
                         room.id, first_agent.current_room
                     )
                     
-                    # Display priority with modern styling (2 decimals for granularity)
+                    # Display priority with room subscript (2 decimals for granularity)
+                    room_num = room.id[-1]  # Get last character (1, 2, 3, etc.)
                     priority_text = self.ax.text(
                         room.x, room.y + 3, 
-                        f'P = {priority:.2f}',
+                        f'$P_{{{room_num}}}$ = {priority:.2f}',  # LaTeX subscript
                         ha='center', va='center',
                         fontsize=11, fontweight='600',
                         fontfamily='sans-serif',
@@ -394,10 +395,11 @@ class MatplotlibAnimator:
                     room.id, first_agent.current_room
                 )
                 
-                # Display priority with modern styling (2 decimals for granularity)
+                # Display priority with room subscript (2 decimals for granularity)
+                room_num = room.id[-1]  # Get last character (1, 2, 3, etc.)
                 priority_text = self.ax.text(
                     room.x, room.y + 2, 
-                    f'P = {priority:.2f}',
+                    f'$P_{{{room_num}}}$ = {priority:.2f}',  # LaTeX subscript
                     ha='center', va='center',
                     fontsize=10, fontweight='500',
                     fontfamily='sans-serif',
