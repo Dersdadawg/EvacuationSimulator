@@ -312,3 +312,4 @@ Algorithm inspired by the **Team Orienteering Problem (TRP)** and adapted for em
 **Version**: 1.0.0  
 **Last Updated**: November 8, 2025
 
+# EvacuationSimulator
