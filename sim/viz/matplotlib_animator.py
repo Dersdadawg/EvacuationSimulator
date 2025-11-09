@@ -220,14 +220,16 @@ class MatplotlibAnimator:
                 
                 # Check if cell is in zero-priority room
                 if cell.room_id in zero_priority_rooms and not cell.is_burning:
-                    # Distinguish: GREEN if evacuated, RED if entrance blocked
+                    # Distinguish: GREEN if evacuated, PINK if entrance blocked
                     room = self.sim.env.rooms[cell.room_id]
                     if room.evacuees_remaining == 0:
                         # LIGHT GREEN - Everyone rescued!
                         color = '#A5D6A7'
+                        alpha = 0.6
                     else:
-                        # LIGHT RED - Entrance blocked by fire, can't rescue!
-                        color = '#FFCCCC'
+                        # BRIGHT PINK - Entrance blocked by fire, can't rescue!
+                        color = '#FF69B4'  # Hot pink for visibility
+                        alpha = 0.85  # More opaque
                     
                     cell_size = self.grid_resolution
                     rect = patches.Rectangle(
@@ -236,7 +238,7 @@ class MatplotlibAnimator:
                         cell_size,
                         facecolor=color,
                         edgecolor='none',
-                        alpha=0.6,
+                        alpha=alpha,
                         zorder=10
                     )
                     self.cell_heatmap_patches.append(rect)
@@ -757,10 +759,12 @@ class MatplotlibAnimator:
         
         # Determine outcome
         reason = 'complete'
+        end_event_data = {}
         from ..engine.simulator import EventType
         for event in self.sim.events:
             if event.event_type == EventType.SIMULATION_END:
                 reason = event.data.get('reason', 'complete')
+                end_event_data = event.data
                 break
         
         if reason == 'all_rescued':
@@ -771,6 +775,11 @@ class MatplotlibAnimator:
             title = 'MISSION FAILED'
             title_color = '#D32F2F'
             outcome = 'All responders deceased'
+        elif reason == 'all_rooms_blocked':
+            title = 'MISSION INCOMPLETE'
+            title_color = '#FF69B4'  # Hot pink
+            trapped = end_event_data.get('trapped', 0)
+            outcome = f'All remaining rooms blocked by fire ({trapped} trapped)'
         else:
             title = 'TIME LIMIT'
             title_color = '#FB8C00'

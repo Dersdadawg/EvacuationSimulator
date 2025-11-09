@@ -436,6 +436,39 @@ class Simulator:
                          {'reason': 'all_agents_dead', 'time': self.time})
             return
         
+        # Check if all remaining rooms are inaccessible (blocked by fire)
+        # If true, simulation is effectively over - no more rescues possible
+        if remaining_evac > 0 and not all_dead:
+            uncleared_rooms = self.env.get_uncleared_rooms()
+            all_blocked = True
+            
+            for room_id in uncleared_rooms:
+                # Check if ANY living agent can reach this room
+                for agent in self.agent_manager.agents:
+                    if not agent.is_dead:
+                        priority = self.decision_engine.calculate_priority_index(room_id, agent.current_room)
+                        # If priority > 0, room is accessible
+                        if priority > 0:
+                            # Try to find a path
+                            if self.grid_pathfinder:
+                                target_room = self.env.rooms[room_id]
+                                grid_path = self.grid_pathfinder.find_path(
+                                    agent.x, agent.y, target_room.x, target_room.y,
+                                    avoid_danger=True, danger_threshold=0.8
+                                )
+                                if grid_path and len(grid_path) > 1:
+                                    all_blocked = False
+                                    break
+                if not all_blocked:
+                    break
+            
+            if all_blocked:
+                self.complete = True
+                self.running = False
+                self.log_event(EventType.SIMULATION_END, None, None,
+                             {'reason': 'all_rooms_blocked', 'time': self.time, 'trapped': remaining_evac})
+                return
+        
         # Time cap reached (very high limit)
         if self.time >= self.time_cap:
             self.complete = True
