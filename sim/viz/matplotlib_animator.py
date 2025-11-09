@@ -117,8 +117,7 @@ class MatplotlibAnimator:
         
         # Animation state
         self.paused = True
-        self.speed = 1.0  # Speed multiplier (0.1 to 5.0)
-        self.step_accumulator = 0.0  # For fractional speed handling
+        self.speed = 1  # Speed multiplier (1 to 5, integer steps only)
         self.anim = None
         
         # Connect keyboard events
@@ -455,13 +454,13 @@ class MatplotlibAnimator:
             self.current_floor = max(self.current_floor - 1, min(self.sim.env.floors.keys()))
             self._redraw_all()
         elif event.key == 'j':
-            # Slow down (0.5 intervals, min 0.5)
-            self.speed = max(0.5, self.speed - 0.5)
-            print(f'Speed: {self.speed:.1f}x')
+            # Slow down (integer steps, min 1)
+            self.speed = max(1, self.speed - 1)
+            print(f'Speed: {self.speed}x')
         elif event.key == 'l':
-            # Speed up (0.5 intervals, max 5.0)
-            self.speed = min(5.0, self.speed + 0.5)
-            print(f'Speed: {self.speed:.1f}x')
+            # Speed up (integer steps, max 5)
+            self.speed = min(5, self.speed + 1)
+            print(f'Speed: {self.speed}x')
     
     def _redraw_all(self):
         """Redraw everything for floor changes"""
@@ -494,14 +493,9 @@ class MatplotlibAnimator:
     
     def _update_frame(self, frame):
         """Update animation frame"""
-        # Run simulation
+        # Run simulation - SIMPLE integer speed
         if not self.paused and not self.sim.complete:
-            # Handle fractional speeds (0.1 to 5.0)
-            self.step_accumulator += self.speed
-            steps_to_take = int(self.step_accumulator)
-            self.step_accumulator -= steps_to_take
-            
-            for _ in range(steps_to_take):
+            for _ in range(self.speed):
                 if not self.sim.complete:
                     self.sim.step()
         
@@ -674,7 +668,7 @@ class MatplotlibAnimator:
             f"Time: {self.sim.time:.1f}s  |  Floor: {self.current_floor}  |  "
             f"Rescued: {results['evacuees_rescued']}/{results['total_evacuees']} ({rescued_pct:.0f}%)\n"
             f"Rooms Cleared: {results['rooms_cleared']}/{results['total_rooms']} ({cleared_pct:.0f}%)  |  "
-            f"Score: {results['success_score']:.3f}  |  Speed: {self.speed:.1f}x\n"
+            f"Score: {results['success_score']:.3f}  |  Speed: {self.speed}x\n"
             f"Status: {status}\n"
             f"{'─' * 60}\n"
             f"Controls: SPACE=Play/Pause  |  J/L=Speed  |  ESC=Quit"
@@ -691,18 +685,23 @@ class MatplotlibAnimator:
     
     def _show_end_screen(self, results):
         """Display beautiful end screen with full statistics"""
-        # Lower opacity of all background elements
+        # Clear everything and show only end screen
         if not hasattr(self, '_end_screen_shown'):
             self._end_screen_shown = True
             
+            # Remove priority labels to prevent overlap
+            for label in self.priority_labels:
+                label.remove()
+            self.priority_labels.clear()
+            
             # Dim all patches
             for patch in self.room_patches.values():
-                patch.set_alpha(0.2)
+                patch.set_alpha(0.15)
             for patch in self.cell_heatmap_patches:
-                patch.set_alpha(0.3)
+                patch.set_alpha(0.2)
             if hasattr(self, 'wall_renderer'):
                 for patch in self.wall_renderer.wall_patches:
-                    patch.set_alpha(0.2)
+                    patch.set_alpha(0.15)
         
         # Determine outcome
         reason = 'complete'
@@ -735,39 +734,40 @@ class MatplotlibAnimator:
         # Beautiful end stats - remove emojis that cause font warnings
         stats = (
             f"{title}\n"
-            f"{'═' * 50}\n"
-            f"{outcome}\n\n"
-            f"FINAL STATISTICS:\n"
-            f"{'─' * 50}\n"
-            f"Time Elapsed: {self.sim.time:.0f} seconds ({self.sim.time/60:.1f} minutes)\n"
-            f"Evacuees Rescued: {results['evacuees_rescued']}/{results['total_evacuees']} ({rescued_pct:.0f}%)\n"
-            f"Rooms Cleared: {results['rooms_cleared']}/{results['total_rooms']} ({cleared_pct:.0f}%)\n"
-            f"Responders Lost: {deaths}/2\n"
-            f"Max Fire Level: {results['max_hazard']:.0%}\n"
-            f"Success Score: {results['success_score']:.3f}\n"
-            f"{'═' * 50}\n\n"
+            f"{'═' * 40}\n"
+            f"{outcome}\n"
+            f"\n"
+            f"Time: {self.sim.time:.0f}s ({self.sim.time/60:.1f} min)\n"
+            f"Rescued: {results['evacuees_rescued']}/{results['total_evacuees']} ({rescued_pct:.0f}%)\n"
+            f"Cleared: {results['rooms_cleared']}/{results['total_rooms']} ({cleared_pct:.0f}%)\n"
+            f"Deaths: {deaths}/2\n"
+            f"Max Fire: {results['max_hazard']:.0%}\n"
+            f"\n"
+            f"SUCCESS RATE: {rescued_pct:.1f}%\n"
+            f"SCORE: {results['success_score']:.3f}\n"
+            f"\n"
             f"Press ESC to close"
         )
         
-        # Large centered text box
+        # Large centered text box - compact and clean
         self.info_text.set_text(stats)
-        self.info_text.set_fontsize(14)
-        self.info_text.set_position((0.5, 0.5))
+        self.info_text.set_fontsize(13)
+        self.info_text.set_position((0.5, 0.45))  # Slightly lower to avoid title
         self.info_text.set_horizontalalignment('center')
         self.info_text.set_verticalalignment('center')
-        self.info_text.set_bbox(dict(boxstyle='round,pad=2.0', 
+        self.info_text.set_bbox(dict(boxstyle='round,pad=1.2', 
                                      facecolor='white', 
                                      edgecolor=title_color, 
-                                     linewidth=5, 
-                                     alpha=1.0))
+                                     linewidth=4, 
+                                     alpha=0.98))
         self.info_text.set_color(title_color)
-        self.info_text.set_fontweight('700')
+        self.info_text.set_fontweight('600')
         self.info_text.set_zorder(1000)  # On top of everything!
     
     def run(self):
         """Start the animation"""
-        # Calculate interval based on FPS and current speed
-        interval = (1000 / self.fps) / self.speed
+        # Calculate interval based on FPS only (speed handled in update)
+        interval = 1000 / self.fps
         
         self.anim = FuncAnimation(
             self.fig,
