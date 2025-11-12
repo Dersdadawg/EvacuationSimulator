@@ -1,0 +1,2682 @@
+[
+  {
+    "num_responders": 1,
+    "sweep_time": 3148.0,
+    "real_time": 0.0843968391418457,
+    "occupants_rescued": 17,
+    "total_occupants": 17,
+    "rescue_rate": 1.0,
+    "rooms_cleared": 6,
+    "total_rooms": 7,
+    "success_score": 0.5400254129606099,
+    "total_distance": 792.93561362055,
+    "avg_distance_per_responder": 792.93561362055,
+    "room_orders": {
+      "0": [
+        {
+          "room": "HALL",
+          "time": 0.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O2",
+          "time": 91.0,
+          "evacuees": 3
+        },
+        {
+          "room": "HALL",
+          "time": 153.0,
+          "evacuees": 0
+        },
+        {
+          "room": "HALL",
+          "time": 252.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O6",
+          "time": 284.0,
+          "evacuees": 2
+        },
+        {
+          "room": "HALL",
+          "time": 342.0,
+          "evacuees": 0
+        },
+        {
+          "room": "HALL",
+          "time": 379.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O3",
+          "time": 411.0,
+          "evacuees": 2
+        },
+        {
+          "room": "HALL",
+          "time": 473.0,
+          "evacuees": 0
+        },
+        {
+          "room": "HALL",
+          "time": 510.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O1",
+          "time": 666.0,
+          "evacuees": 5
+        },
+        {
+          "room": "HALL",
+          "time": 728.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O2",
+          "time": 862.0,
+          "evacuees": 2
+        },
+        {
+          "room": "HALL",
+          "time": 924.0,
+          "evacuees": 0
+        },
+        {
+          "room": "HALL",
+          "time": 1023.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O4",
+          "time": 1179.0,
+          "evacuees": 4
+        },
+        {
+          "room": "HALL",
+          "time": 1237.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O1",
+          "time": 1309.0,
+          "evacuees": 4
+        },
+        {
+          "room": "HALL",
+          "time": 1371.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O4",
+          "time": 1443.0,
+          "evacuees": 3
+        },
+        {
+          "room": "HALL",
+          "time": 1501.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O1",
+          "time": 1573.0,
+          "evacuees": 3
+        },
+        {
+          "room": "HALL",
+          "time": 1635.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O5",
+          "time": 1769.0,
+          "evacuees": 1
+        },
+        {
+          "room": "HALL",
+          "time": 1827.0,
+          "evacuees": 0
+        },
+        {
+          "room": "HALL",
+          "time": 1926.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O6",
+          "time": 1958.0,
+          "evacuees": 1
+        },
+        {
+          "room": "HALL",
+          "time": 2016.0,
+          "evacuees": 0
+        },
+        {
+          "room": "HALL",
+          "time": 2053.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O3",
+          "time": 2085.0,
+          "evacuees": 1
+        },
+        {
+          "room": "HALL",
+          "time": 2147.0,
+          "evacuees": 0
+        },
+        {
+          "room": "HALL",
+          "time": 2184.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O4",
+          "time": 2340.0,
+          "evacuees": 2
+        },
+        {
+          "room": "HALL",
+          "time": 2398.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O2",
+          "time": 2532.0,
+          "evacuees": 1
+        },
+        {
+          "room": "HALL",
+          "time": 2594.0,
+          "evacuees": 0
+        },
+        {
+          "room": "HALL",
+          "time": 2693.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O1",
+          "time": 2849.0,
+          "evacuees": 2
+        },
+        {
+          "room": "HALL",
+          "time": 2911.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O4",
+          "time": 2983.0,
+          "evacuees": 1
+        },
+        {
+          "room": "HALL",
+          "time": 3041.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O1",
+          "time": 3113.0,
+          "evacuees": 1
+        }
+      ]
+    },
+    "room_clear_times": {
+      "O5": 1802.0,
+      "O6": 1991.0,
+      "O3": 2120.0,
+      "O2": 2567.0,
+      "O4": 3016.0
+    },
+    "visit_sequence": [
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 0.0
+      },
+      {
+        "responder": 0,
+        "room": "O2",
+        "time": 91.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 153.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 252.0
+      },
+      {
+        "responder": 0,
+        "room": "O6",
+        "time": 284.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 342.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 379.0
+      },
+      {
+        "responder": 0,
+        "room": "O3",
+        "time": 411.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 473.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 510.0
+      },
+      {
+        "responder": 0,
+        "room": "O1",
+        "time": 666.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 728.0
+      },
+      {
+        "responder": 0,
+        "room": "O2",
+        "time": 862.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 924.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 1023.0
+      },
+      {
+        "responder": 0,
+        "room": "O4",
+        "time": 1179.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 1237.0
+      },
+      {
+        "responder": 0,
+        "room": "O1",
+        "time": 1309.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 1371.0
+      },
+      {
+        "responder": 0,
+        "room": "O4",
+        "time": 1443.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 1501.0
+      },
+      {
+        "responder": 0,
+        "room": "O1",
+        "time": 1573.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 1635.0
+      },
+      {
+        "responder": 0,
+        "room": "O5",
+        "time": 1769.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 1827.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 1926.0
+      },
+      {
+        "responder": 0,
+        "room": "O6",
+        "time": 1958.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 2016.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 2053.0
+      },
+      {
+        "responder": 0,
+        "room": "O3",
+        "time": 2085.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 2147.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 2184.0
+      },
+      {
+        "responder": 0,
+        "room": "O4",
+        "time": 2340.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 2398.0
+      },
+      {
+        "responder": 0,
+        "room": "O2",
+        "time": 2532.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 2594.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 2693.0
+      },
+      {
+        "responder": 0,
+        "room": "O1",
+        "time": 2849.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 2911.0
+      },
+      {
+        "responder": 0,
+        "room": "O4",
+        "time": 2983.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 3041.0
+      },
+      {
+        "responder": 0,
+        "room": "O1",
+        "time": 3113.0
+      }
+    ]
+  },
+  {
+    "num_responders": 2,
+    "sweep_time": 1713.0,
+    "real_time": 0.08946418762207031,
+    "occupants_rescued": 17,
+    "total_occupants": 17,
+    "rescue_rate": 1.0,
+    "rooms_cleared": 6,
+    "total_rooms": 7,
+    "success_score": 0.49620548744892,
+    "total_distance": 862.1178725415746,
+    "avg_distance_per_responder": 431.0589362707873,
+    "room_orders": {
+      "0": [
+        {
+          "room": "HALL",
+          "time": 0.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O2",
+          "time": 91.0,
+          "evacuees": 3
+        },
+        {
+          "room": "HALL",
+          "time": 153.0,
+          "evacuees": 0
+        },
+        {
+          "room": "HALL",
+          "time": 252.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O6",
+          "time": 284.0,
+          "evacuees": 2
+        },
+        {
+          "room": "HALL",
+          "time": 342.0,
+          "evacuees": 0
+        },
+        {
+          "room": "HALL",
+          "time": 379.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O3",
+          "time": 411.0,
+          "evacuees": 2
+        },
+        {
+          "room": "HALL",
+          "time": 473.0,
+          "evacuees": 0
+        },
+        {
+          "room": "HALL",
+          "time": 510.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O1",
+          "time": 666.0,
+          "evacuees": 5
+        },
+        {
+          "room": "HALL",
+          "time": 728.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O4",
+          "time": 800.0,
+          "evacuees": 4
+        },
+        {
+          "room": "HALL",
+          "time": 858.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O1",
+          "time": 930.0,
+          "evacuees": 3
+        },
+        {
+          "room": "HALL",
+          "time": 992.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O5",
+          "time": 1126.0,
+          "evacuees": 1
+        },
+        {
+          "room": "HALL",
+          "time": 1185.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O4",
+          "time": 1243.0,
+          "evacuees": 2
+        },
+        {
+          "room": "HALL",
+          "time": 1301.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O2",
+          "time": 1435.0,
+          "evacuees": 0
+        },
+        {
+          "room": "HALL",
+          "time": 1488.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O1",
+          "time": 1546.0,
+          "evacuees": 1
+        },
+        {
+          "room": "HALL",
+          "time": 1608.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O4",
+          "time": 1680.0,
+          "evacuees": 1
+        }
+      ],
+      "1": [
+        {
+          "room": "HALL",
+          "time": 0.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O2",
+          "time": 89.0,
+          "evacuees": 3
+        },
+        {
+          "room": "HALL",
+          "time": 151.0,
+          "evacuees": 0
+        },
+        {
+          "room": "HALL",
+          "time": 250.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O6",
+          "time": 282.0,
+          "evacuees": 2
+        },
+        {
+          "room": "HALL",
+          "time": 340.0,
+          "evacuees": 0
+        },
+        {
+          "room": "HALL",
+          "time": 377.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O3",
+          "time": 409.0,
+          "evacuees": 2
+        },
+        {
+          "room": "HALL",
+          "time": 471.0,
+          "evacuees": 0
+        },
+        {
+          "room": "HALL",
+          "time": 508.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O1",
+          "time": 664.0,
+          "evacuees": 5
+        },
+        {
+          "room": "HALL",
+          "time": 726.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O4",
+          "time": 798.0,
+          "evacuees": 4
+        },
+        {
+          "room": "HALL",
+          "time": 856.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O1",
+          "time": 928.0,
+          "evacuees": 3
+        },
+        {
+          "room": "HALL",
+          "time": 990.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O5",
+          "time": 1124.0,
+          "evacuees": 1
+        },
+        {
+          "room": "HALL",
+          "time": 1182.0,
+          "evacuees": 0
+        },
+        {
+          "room": "HALL",
+          "time": 1281.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O2",
+          "time": 1375.0,
+          "evacuees": 1
+        },
+        {
+          "room": "HALL",
+          "time": 1437.0,
+          "evacuees": 0
+        },
+        {
+          "room": "HALL",
+          "time": 1536.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O4",
+          "time": 1692.0,
+          "evacuees": 1
+        }
+      ]
+    },
+    "room_clear_times": {
+      "O6": 317.0,
+      "O3": 446.0,
+      "O5": 1157.0,
+      "O2": 1410.0,
+      "O1": 1581.0
+    },
+    "visit_sequence": [
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 0.0
+      },
+      {
+        "responder": 1,
+        "room": "HALL",
+        "time": 0.0
+      },
+      {
+        "responder": 1,
+        "room": "O2",
+        "time": 89.0
+      },
+      {
+        "responder": 0,
+        "room": "O2",
+        "time": 91.0
+      },
+      {
+        "responder": 1,
+        "room": "HALL",
+        "time": 151.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 153.0
+      },
+      {
+        "responder": 1,
+        "room": "HALL",
+        "time": 250.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 252.0
+      },
+      {
+        "responder": 1,
+        "room": "O6",
+        "time": 282.0
+      },
+      {
+        "responder": 0,
+        "room": "O6",
+        "time": 284.0
+      },
+      {
+        "responder": 1,
+        "room": "HALL",
+        "time": 340.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 342.0
+      },
+      {
+        "responder": 1,
+        "room": "HALL",
+        "time": 377.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 379.0
+      },
+      {
+        "responder": 1,
+        "room": "O3",
+        "time": 409.0
+      },
+      {
+        "responder": 0,
+        "room": "O3",
+        "time": 411.0
+      },
+      {
+        "responder": 1,
+        "room": "HALL",
+        "time": 471.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 473.0
+      },
+      {
+        "responder": 1,
+        "room": "HALL",
+        "time": 508.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 510.0
+      },
+      {
+        "responder": 1,
+        "room": "O1",
+        "time": 664.0
+      },
+      {
+        "responder": 0,
+        "room": "O1",
+        "time": 666.0
+      },
+      {
+        "responder": 1,
+        "room": "HALL",
+        "time": 726.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 728.0
+      },
+      {
+        "responder": 1,
+        "room": "O4",
+        "time": 798.0
+      },
+      {
+        "responder": 0,
+        "room": "O4",
+        "time": 800.0
+      },
+      {
+        "responder": 1,
+        "room": "HALL",
+        "time": 856.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 858.0
+      },
+      {
+        "responder": 1,
+        "room": "O1",
+        "time": 928.0
+      },
+      {
+        "responder": 0,
+        "room": "O1",
+        "time": 930.0
+      },
+      {
+        "responder": 1,
+        "room": "HALL",
+        "time": 990.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 992.0
+      },
+      {
+        "responder": 1,
+        "room": "O5",
+        "time": 1124.0
+      },
+      {
+        "responder": 0,
+        "room": "O5",
+        "time": 1126.0
+      },
+      {
+        "responder": 1,
+        "room": "HALL",
+        "time": 1182.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 1185.0
+      },
+      {
+        "responder": 0,
+        "room": "O4",
+        "time": 1243.0
+      },
+      {
+        "responder": 1,
+        "room": "HALL",
+        "time": 1281.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 1301.0
+      },
+      {
+        "responder": 1,
+        "room": "O2",
+        "time": 1375.0
+      },
+      {
+        "responder": 0,
+        "room": "O2",
+        "time": 1435.0
+      },
+      {
+        "responder": 1,
+        "room": "HALL",
+        "time": 1437.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 1488.0
+      },
+      {
+        "responder": 1,
+        "room": "HALL",
+        "time": 1536.0
+      },
+      {
+        "responder": 0,
+        "room": "O1",
+        "time": 1546.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 1608.0
+      },
+      {
+        "responder": 0,
+        "room": "O4",
+        "time": 1680.0
+      },
+      {
+        "responder": 1,
+        "room": "O4",
+        "time": 1692.0
+      }
+    ]
+  },
+  {
+    "num_responders": 3,
+    "sweep_time": 1144.0,
+    "real_time": 0.08239006996154785,
+    "occupants_rescued": 17,
+    "total_occupants": 17,
+    "rescue_rate": 1.0,
+    "rooms_cleared": 6,
+    "total_rooms": 7,
+    "success_score": 0.49533799533799533,
+    "total_distance": 866.4569857120915,
+    "avg_distance_per_responder": 288.8189952373638,
+    "room_orders": {
+      "0": [
+        {
+          "room": "HALL",
+          "time": 0.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O2",
+          "time": 91.0,
+          "evacuees": 3
+        },
+        {
+          "room": "HALL",
+          "time": 153.0,
+          "evacuees": 0
+        },
+        {
+          "room": "HALL",
+          "time": 252.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O6",
+          "time": 284.0,
+          "evacuees": 2
+        },
+        {
+          "room": "HALL",
+          "time": 342.0,
+          "evacuees": 0
+        },
+        {
+          "room": "HALL",
+          "time": 379.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O3",
+          "time": 411.0,
+          "evacuees": 2
+        },
+        {
+          "room": "HALL",
+          "time": 473.0,
+          "evacuees": 0
+        },
+        {
+          "room": "HALL",
+          "time": 510.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O1",
+          "time": 666.0,
+          "evacuees": 4
+        },
+        {
+          "room": "HALL",
+          "time": 728.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O4",
+          "time": 800.0,
+          "evacuees": 3
+        },
+        {
+          "room": "HALL",
+          "time": 858.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O5",
+          "time": 992.0,
+          "evacuees": 1
+        },
+        {
+          "room": "HALL",
+          "time": 1051.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O1",
+          "time": 1109.0,
+          "evacuees": 1
+        }
+      ],
+      "1": [
+        {
+          "room": "HALL",
+          "time": 0.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O2",
+          "time": 89.0,
+          "evacuees": 3
+        },
+        {
+          "room": "HALL",
+          "time": 151.0,
+          "evacuees": 0
+        },
+        {
+          "room": "HALL",
+          "time": 250.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O6",
+          "time": 282.0,
+          "evacuees": 2
+        },
+        {
+          "room": "HALL",
+          "time": 340.0,
+          "evacuees": 0
+        },
+        {
+          "room": "HALL",
+          "time": 377.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O3",
+          "time": 409.0,
+          "evacuees": 2
+        },
+        {
+          "room": "HALL",
+          "time": 471.0,
+          "evacuees": 0
+        },
+        {
+          "room": "HALL",
+          "time": 508.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O1",
+          "time": 664.0,
+          "evacuees": 4
+        },
+        {
+          "room": "HALL",
+          "time": 726.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O4",
+          "time": 798.0,
+          "evacuees": 3
+        },
+        {
+          "room": "HALL",
+          "time": 856.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O5",
+          "time": 990.0,
+          "evacuees": 1
+        },
+        {
+          "room": "HALL",
+          "time": 1048.0,
+          "evacuees": 0
+        }
+      ],
+      "2": [
+        {
+          "room": "HALL",
+          "time": 0.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O2",
+          "time": 91.0,
+          "evacuees": 3
+        },
+        {
+          "room": "HALL",
+          "time": 153.0,
+          "evacuees": 0
+        },
+        {
+          "room": "HALL",
+          "time": 252.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O6",
+          "time": 284.0,
+          "evacuees": 2
+        },
+        {
+          "room": "HALL",
+          "time": 343.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O4",
+          "time": 463.0,
+          "evacuees": 4
+        },
+        {
+          "room": "HALL",
+          "time": 521.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O1",
+          "time": 593.0,
+          "evacuees": 5
+        },
+        {
+          "room": "HALL",
+          "time": 655.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O1",
+          "time": 727.0,
+          "evacuees": 2
+        },
+        {
+          "room": "HALL",
+          "time": 789.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O4",
+          "time": 861.0,
+          "evacuees": 1
+        },
+        {
+          "room": "HALL",
+          "time": 919.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O5",
+          "time": 1053.0,
+          "evacuees": 0
+        },
+        {
+          "room": "HALL",
+          "time": 1102.0,
+          "evacuees": 0
+        }
+      ]
+    },
+    "room_clear_times": {
+      "O2": 126.0,
+      "O6": 317.0,
+      "O3": 446.0,
+      "O4": 894.0,
+      "O5": 1023.0
+    },
+    "visit_sequence": [
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 0.0
+      },
+      {
+        "responder": 1,
+        "room": "HALL",
+        "time": 0.0
+      },
+      {
+        "responder": 2,
+        "room": "HALL",
+        "time": 0.0
+      },
+      {
+        "responder": 1,
+        "room": "O2",
+        "time": 89.0
+      },
+      {
+        "responder": 0,
+        "room": "O2",
+        "time": 91.0
+      },
+      {
+        "responder": 2,
+        "room": "O2",
+        "time": 91.0
+      },
+      {
+        "responder": 1,
+        "room": "HALL",
+        "time": 151.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 153.0
+      },
+      {
+        "responder": 2,
+        "room": "HALL",
+        "time": 153.0
+      },
+      {
+        "responder": 1,
+        "room": "HALL",
+        "time": 250.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 252.0
+      },
+      {
+        "responder": 2,
+        "room": "HALL",
+        "time": 252.0
+      },
+      {
+        "responder": 1,
+        "room": "O6",
+        "time": 282.0
+      },
+      {
+        "responder": 0,
+        "room": "O6",
+        "time": 284.0
+      },
+      {
+        "responder": 2,
+        "room": "O6",
+        "time": 284.0
+      },
+      {
+        "responder": 1,
+        "room": "HALL",
+        "time": 340.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 342.0
+      },
+      {
+        "responder": 2,
+        "room": "HALL",
+        "time": 343.0
+      },
+      {
+        "responder": 1,
+        "room": "HALL",
+        "time": 377.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 379.0
+      },
+      {
+        "responder": 1,
+        "room": "O3",
+        "time": 409.0
+      },
+      {
+        "responder": 0,
+        "room": "O3",
+        "time": 411.0
+      },
+      {
+        "responder": 2,
+        "room": "O4",
+        "time": 463.0
+      },
+      {
+        "responder": 1,
+        "room": "HALL",
+        "time": 471.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 473.0
+      },
+      {
+        "responder": 1,
+        "room": "HALL",
+        "time": 508.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 510.0
+      },
+      {
+        "responder": 2,
+        "room": "HALL",
+        "time": 521.0
+      },
+      {
+        "responder": 2,
+        "room": "O1",
+        "time": 593.0
+      },
+      {
+        "responder": 2,
+        "room": "HALL",
+        "time": 655.0
+      },
+      {
+        "responder": 1,
+        "room": "O1",
+        "time": 664.0
+      },
+      {
+        "responder": 0,
+        "room": "O1",
+        "time": 666.0
+      },
+      {
+        "responder": 1,
+        "room": "HALL",
+        "time": 726.0
+      },
+      {
+        "responder": 2,
+        "room": "O1",
+        "time": 727.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 728.0
+      },
+      {
+        "responder": 2,
+        "room": "HALL",
+        "time": 789.0
+      },
+      {
+        "responder": 1,
+        "room": "O4",
+        "time": 798.0
+      },
+      {
+        "responder": 0,
+        "room": "O4",
+        "time": 800.0
+      },
+      {
+        "responder": 1,
+        "room": "HALL",
+        "time": 856.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 858.0
+      },
+      {
+        "responder": 2,
+        "room": "O4",
+        "time": 861.0
+      },
+      {
+        "responder": 2,
+        "room": "HALL",
+        "time": 919.0
+      },
+      {
+        "responder": 1,
+        "room": "O5",
+        "time": 990.0
+      },
+      {
+        "responder": 0,
+        "room": "O5",
+        "time": 992.0
+      },
+      {
+        "responder": 1,
+        "room": "HALL",
+        "time": 1048.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 1051.0
+      },
+      {
+        "responder": 2,
+        "room": "O5",
+        "time": 1053.0
+      },
+      {
+        "responder": 2,
+        "room": "HALL",
+        "time": 1102.0
+      },
+      {
+        "responder": 0,
+        "room": "O1",
+        "time": 1109.0
+      }
+    ]
+  },
+  {
+    "num_responders": 4,
+    "sweep_time": 926.0,
+    "real_time": 0.09549403190612793,
+    "occupants_rescued": 17,
+    "total_occupants": 17,
+    "rescue_rate": 1.0,
+    "rooms_cleared": 6,
+    "total_rooms": 7,
+    "success_score": 0.458963282937365,
+    "total_distance": 927.3047208539598,
+    "avg_distance_per_responder": 231.82618021348995,
+    "room_orders": {
+      "0": [
+        {
+          "room": "HALL",
+          "time": 0.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O2",
+          "time": 91.0,
+          "evacuees": 3
+        },
+        {
+          "room": "HALL",
+          "time": 153.0,
+          "evacuees": 0
+        },
+        {
+          "room": "HALL",
+          "time": 252.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O6",
+          "time": 284.0,
+          "evacuees": 2
+        },
+        {
+          "room": "HALL",
+          "time": 343.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O4",
+          "time": 463.0,
+          "evacuees": 3
+        },
+        {
+          "room": "HALL",
+          "time": 521.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O1",
+          "time": 593.0,
+          "evacuees": 3
+        },
+        {
+          "room": "HALL",
+          "time": 655.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O5",
+          "time": 789.0,
+          "evacuees": 1
+        },
+        {
+          "room": "HALL",
+          "time": 847.0,
+          "evacuees": 0
+        }
+      ],
+      "1": [
+        {
+          "room": "HALL",
+          "time": 0.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O2",
+          "time": 89.0,
+          "evacuees": 3
+        },
+        {
+          "room": "HALL",
+          "time": 151.0,
+          "evacuees": 0
+        },
+        {
+          "room": "HALL",
+          "time": 250.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O6",
+          "time": 282.0,
+          "evacuees": 2
+        },
+        {
+          "room": "HALL",
+          "time": 340.0,
+          "evacuees": 0
+        },
+        {
+          "room": "HALL",
+          "time": 377.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O3",
+          "time": 409.0,
+          "evacuees": 2
+        },
+        {
+          "room": "HALL",
+          "time": 471.0,
+          "evacuees": 0
+        },
+        {
+          "room": "HALL",
+          "time": 508.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O1",
+          "time": 664.0,
+          "evacuees": 1
+        },
+        {
+          "room": "HALL",
+          "time": 726.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O5",
+          "time": 860.0,
+          "evacuees": 0
+        },
+        {
+          "room": "HALL",
+          "time": 909.0,
+          "evacuees": 0
+        }
+      ],
+      "2": [
+        {
+          "room": "HALL",
+          "time": 0.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O2",
+          "time": 91.0,
+          "evacuees": 3
+        },
+        {
+          "room": "HALL",
+          "time": 154.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O1",
+          "time": 212.0,
+          "evacuees": 5
+        },
+        {
+          "room": "HALL",
+          "time": 274.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O4",
+          "time": 346.0,
+          "evacuees": 4
+        },
+        {
+          "room": "HALL",
+          "time": 404.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O1",
+          "time": 476.0,
+          "evacuees": 4
+        },
+        {
+          "room": "HALL",
+          "time": 538.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O1",
+          "time": 610.0,
+          "evacuees": 3
+        },
+        {
+          "room": "HALL",
+          "time": 672.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O5",
+          "time": 806.0,
+          "evacuees": 1
+        },
+        {
+          "room": "HALL",
+          "time": 855.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O4",
+          "time": 913.0,
+          "evacuees": 1
+        }
+      ],
+      "3": [
+        {
+          "room": "HALL",
+          "time": 0.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O2",
+          "time": 89.0,
+          "evacuees": 3
+        },
+        {
+          "room": "HALL",
+          "time": 151.0,
+          "evacuees": 0
+        },
+        {
+          "room": "HALL",
+          "time": 250.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O6",
+          "time": 282.0,
+          "evacuees": 2
+        },
+        {
+          "room": "HALL",
+          "time": 340.0,
+          "evacuees": 0
+        },
+        {
+          "room": "HALL",
+          "time": 377.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O3",
+          "time": 409.0,
+          "evacuees": 2
+        },
+        {
+          "room": "HALL",
+          "time": 471.0,
+          "evacuees": 0
+        },
+        {
+          "room": "HALL",
+          "time": 508.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O1",
+          "time": 664.0,
+          "evacuees": 1
+        },
+        {
+          "room": "HALL",
+          "time": 727.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O4",
+          "time": 763.0,
+          "evacuees": 2
+        },
+        {
+          "room": "HALL",
+          "time": 821.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O4",
+          "time": 893.0,
+          "evacuees": 1
+        }
+      ]
+    },
+    "room_clear_times": {
+      "O2": 126.0,
+      "O6": 315.0,
+      "O3": 444.0,
+      "O1": 699.0,
+      "O5": 822.0
+    },
+    "visit_sequence": [
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 0.0
+      },
+      {
+        "responder": 1,
+        "room": "HALL",
+        "time": 0.0
+      },
+      {
+        "responder": 2,
+        "room": "HALL",
+        "time": 0.0
+      },
+      {
+        "responder": 3,
+        "room": "HALL",
+        "time": 0.0
+      },
+      {
+        "responder": 1,
+        "room": "O2",
+        "time": 89.0
+      },
+      {
+        "responder": 3,
+        "room": "O2",
+        "time": 89.0
+      },
+      {
+        "responder": 0,
+        "room": "O2",
+        "time": 91.0
+      },
+      {
+        "responder": 2,
+        "room": "O2",
+        "time": 91.0
+      },
+      {
+        "responder": 1,
+        "room": "HALL",
+        "time": 151.0
+      },
+      {
+        "responder": 3,
+        "room": "HALL",
+        "time": 151.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 153.0
+      },
+      {
+        "responder": 2,
+        "room": "HALL",
+        "time": 154.0
+      },
+      {
+        "responder": 2,
+        "room": "O1",
+        "time": 212.0
+      },
+      {
+        "responder": 1,
+        "room": "HALL",
+        "time": 250.0
+      },
+      {
+        "responder": 3,
+        "room": "HALL",
+        "time": 250.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 252.0
+      },
+      {
+        "responder": 2,
+        "room": "HALL",
+        "time": 274.0
+      },
+      {
+        "responder": 1,
+        "room": "O6",
+        "time": 282.0
+      },
+      {
+        "responder": 3,
+        "room": "O6",
+        "time": 282.0
+      },
+      {
+        "responder": 0,
+        "room": "O6",
+        "time": 284.0
+      },
+      {
+        "responder": 1,
+        "room": "HALL",
+        "time": 340.0
+      },
+      {
+        "responder": 3,
+        "room": "HALL",
+        "time": 340.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 343.0
+      },
+      {
+        "responder": 2,
+        "room": "O4",
+        "time": 346.0
+      },
+      {
+        "responder": 1,
+        "room": "HALL",
+        "time": 377.0
+      },
+      {
+        "responder": 3,
+        "room": "HALL",
+        "time": 377.0
+      },
+      {
+        "responder": 2,
+        "room": "HALL",
+        "time": 404.0
+      },
+      {
+        "responder": 1,
+        "room": "O3",
+        "time": 409.0
+      },
+      {
+        "responder": 3,
+        "room": "O3",
+        "time": 409.0
+      },
+      {
+        "responder": 0,
+        "room": "O4",
+        "time": 463.0
+      },
+      {
+        "responder": 1,
+        "room": "HALL",
+        "time": 471.0
+      },
+      {
+        "responder": 3,
+        "room": "HALL",
+        "time": 471.0
+      },
+      {
+        "responder": 2,
+        "room": "O1",
+        "time": 476.0
+      },
+      {
+        "responder": 1,
+        "room": "HALL",
+        "time": 508.0
+      },
+      {
+        "responder": 3,
+        "room": "HALL",
+        "time": 508.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 521.0
+      },
+      {
+        "responder": 2,
+        "room": "HALL",
+        "time": 538.0
+      },
+      {
+        "responder": 0,
+        "room": "O1",
+        "time": 593.0
+      },
+      {
+        "responder": 2,
+        "room": "O1",
+        "time": 610.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 655.0
+      },
+      {
+        "responder": 1,
+        "room": "O1",
+        "time": 664.0
+      },
+      {
+        "responder": 3,
+        "room": "O1",
+        "time": 664.0
+      },
+      {
+        "responder": 2,
+        "room": "HALL",
+        "time": 672.0
+      },
+      {
+        "responder": 1,
+        "room": "HALL",
+        "time": 726.0
+      },
+      {
+        "responder": 3,
+        "room": "HALL",
+        "time": 727.0
+      },
+      {
+        "responder": 3,
+        "room": "O4",
+        "time": 763.0
+      },
+      {
+        "responder": 0,
+        "room": "O5",
+        "time": 789.0
+      },
+      {
+        "responder": 2,
+        "room": "O5",
+        "time": 806.0
+      },
+      {
+        "responder": 3,
+        "room": "HALL",
+        "time": 821.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 847.0
+      },
+      {
+        "responder": 2,
+        "room": "HALL",
+        "time": 855.0
+      },
+      {
+        "responder": 1,
+        "room": "O5",
+        "time": 860.0
+      },
+      {
+        "responder": 3,
+        "room": "O4",
+        "time": 893.0
+      },
+      {
+        "responder": 1,
+        "room": "HALL",
+        "time": 909.0
+      },
+      {
+        "responder": 2,
+        "room": "O4",
+        "time": 913.0
+      }
+    ]
+  },
+  {
+    "num_responders": 5,
+    "sweep_time": 796.0,
+    "real_time": 0.11195516586303711,
+    "occupants_rescued": 17,
+    "total_occupants": 17,
+    "rescue_rate": 1.0,
+    "rooms_cleared": 6,
+    "total_rooms": 7,
+    "success_score": 0.4271356783919598,
+    "total_distance": 995.9514458690516,
+    "avg_distance_per_responder": 199.1902891738103,
+    "room_orders": {
+      "0": [
+        {
+          "room": "HALL",
+          "time": 0.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O2",
+          "time": 91.0,
+          "evacuees": 3
+        },
+        {
+          "room": "HALL",
+          "time": 153.0,
+          "evacuees": 0
+        },
+        {
+          "room": "HALL",
+          "time": 252.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O6",
+          "time": 284.0,
+          "evacuees": 2
+        },
+        {
+          "room": "HALL",
+          "time": 343.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O4",
+          "time": 463.0,
+          "evacuees": 2
+        },
+        {
+          "room": "HALL",
+          "time": 521.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O5",
+          "time": 655.0,
+          "evacuees": 1
+        },
+        {
+          "room": "HALL",
+          "time": 713.0,
+          "evacuees": 0
+        }
+      ],
+      "1": [
+        {
+          "room": "HALL",
+          "time": 0.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O2",
+          "time": 89.0,
+          "evacuees": 3
+        },
+        {
+          "room": "HALL",
+          "time": 151.0,
+          "evacuees": 0
+        },
+        {
+          "room": "HALL",
+          "time": 250.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O6",
+          "time": 282.0,
+          "evacuees": 2
+        },
+        {
+          "room": "HALL",
+          "time": 340.0,
+          "evacuees": 0
+        },
+        {
+          "room": "HALL",
+          "time": 377.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O3",
+          "time": 409.0,
+          "evacuees": 2
+        },
+        {
+          "room": "HALL",
+          "time": 471.0,
+          "evacuees": 0
+        },
+        {
+          "room": "HALL",
+          "time": 508.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O1",
+          "time": 664.0,
+          "evacuees": 1
+        },
+        {
+          "room": "HALL",
+          "time": 726.0,
+          "evacuees": 0
+        }
+      ],
+      "2": [
+        {
+          "room": "HALL",
+          "time": 0.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O2",
+          "time": 91.0,
+          "evacuees": 3
+        },
+        {
+          "room": "HALL",
+          "time": 154.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O1",
+          "time": 212.0,
+          "evacuees": 5
+        },
+        {
+          "room": "HALL",
+          "time": 274.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O4",
+          "time": 346.0,
+          "evacuees": 4
+        },
+        {
+          "room": "HALL",
+          "time": 404.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O1",
+          "time": 476.0,
+          "evacuees": 3
+        },
+        {
+          "room": "HALL",
+          "time": 538.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O5",
+          "time": 672.0,
+          "evacuees": 1
+        },
+        {
+          "room": "HALL",
+          "time": 721.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O4",
+          "time": 779.0,
+          "evacuees": 1
+        }
+      ],
+      "3": [
+        {
+          "room": "HALL",
+          "time": 0.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O2",
+          "time": 89.0,
+          "evacuees": 3
+        },
+        {
+          "room": "HALL",
+          "time": 151.0,
+          "evacuees": 0
+        },
+        {
+          "room": "HALL",
+          "time": 250.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O6",
+          "time": 282.0,
+          "evacuees": 2
+        },
+        {
+          "room": "HALL",
+          "time": 340.0,
+          "evacuees": 0
+        },
+        {
+          "room": "HALL",
+          "time": 377.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O3",
+          "time": 409.0,
+          "evacuees": 2
+        },
+        {
+          "room": "HALL",
+          "time": 471.0,
+          "evacuees": 0
+        },
+        {
+          "room": "HALL",
+          "time": 508.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O1",
+          "time": 664.0,
+          "evacuees": 1
+        },
+        {
+          "room": "HALL",
+          "time": 727.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O4",
+          "time": 763.0,
+          "evacuees": 1
+        }
+      ],
+      "4": [
+        {
+          "room": "HALL",
+          "time": 0.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O2",
+          "time": 91.0,
+          "evacuees": 3
+        },
+        {
+          "room": "HALL",
+          "time": 154.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O1",
+          "time": 212.0,
+          "evacuees": 5
+        },
+        {
+          "room": "HALL",
+          "time": 274.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O4",
+          "time": 346.0,
+          "evacuees": 4
+        },
+        {
+          "room": "HALL",
+          "time": 404.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O1",
+          "time": 476.0,
+          "evacuees": 3
+        },
+        {
+          "room": "HALL",
+          "time": 538.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O5",
+          "time": 672.0,
+          "evacuees": 1
+        },
+        {
+          "room": "HALL",
+          "time": 721.0,
+          "evacuees": 0
+        },
+        {
+          "room": "O4",
+          "time": 779.0,
+          "evacuees": 1
+        }
+      ]
+    },
+    "room_clear_times": {
+      "O2": 126.0,
+      "O6": 315.0,
+      "O3": 444.0,
+      "O5": 688.0,
+      "O1": 699.0
+    },
+    "visit_sequence": [
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 0.0
+      },
+      {
+        "responder": 1,
+        "room": "HALL",
+        "time": 0.0
+      },
+      {
+        "responder": 2,
+        "room": "HALL",
+        "time": 0.0
+      },
+      {
+        "responder": 3,
+        "room": "HALL",
+        "time": 0.0
+      },
+      {
+        "responder": 4,
+        "room": "HALL",
+        "time": 0.0
+      },
+      {
+        "responder": 1,
+        "room": "O2",
+        "time": 89.0
+      },
+      {
+        "responder": 3,
+        "room": "O2",
+        "time": 89.0
+      },
+      {
+        "responder": 0,
+        "room": "O2",
+        "time": 91.0
+      },
+      {
+        "responder": 2,
+        "room": "O2",
+        "time": 91.0
+      },
+      {
+        "responder": 4,
+        "room": "O2",
+        "time": 91.0
+      },
+      {
+        "responder": 1,
+        "room": "HALL",
+        "time": 151.0
+      },
+      {
+        "responder": 3,
+        "room": "HALL",
+        "time": 151.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 153.0
+      },
+      {
+        "responder": 2,
+        "room": "HALL",
+        "time": 154.0
+      },
+      {
+        "responder": 4,
+        "room": "HALL",
+        "time": 154.0
+      },
+      {
+        "responder": 2,
+        "room": "O1",
+        "time": 212.0
+      },
+      {
+        "responder": 4,
+        "room": "O1",
+        "time": 212.0
+      },
+      {
+        "responder": 1,
+        "room": "HALL",
+        "time": 250.0
+      },
+      {
+        "responder": 3,
+        "room": "HALL",
+        "time": 250.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 252.0
+      },
+      {
+        "responder": 2,
+        "room": "HALL",
+        "time": 274.0
+      },
+      {
+        "responder": 4,
+        "room": "HALL",
+        "time": 274.0
+      },
+      {
+        "responder": 1,
+        "room": "O6",
+        "time": 282.0
+      },
+      {
+        "responder": 3,
+        "room": "O6",
+        "time": 282.0
+      },
+      {
+        "responder": 0,
+        "room": "O6",
+        "time": 284.0
+      },
+      {
+        "responder": 1,
+        "room": "HALL",
+        "time": 340.0
+      },
+      {
+        "responder": 3,
+        "room": "HALL",
+        "time": 340.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 343.0
+      },
+      {
+        "responder": 2,
+        "room": "O4",
+        "time": 346.0
+      },
+      {
+        "responder": 4,
+        "room": "O4",
+        "time": 346.0
+      },
+      {
+        "responder": 1,
+        "room": "HALL",
+        "time": 377.0
+      },
+      {
+        "responder": 3,
+        "room": "HALL",
+        "time": 377.0
+      },
+      {
+        "responder": 2,
+        "room": "HALL",
+        "time": 404.0
+      },
+      {
+        "responder": 4,
+        "room": "HALL",
+        "time": 404.0
+      },
+      {
+        "responder": 1,
+        "room": "O3",
+        "time": 409.0
+      },
+      {
+        "responder": 3,
+        "room": "O3",
+        "time": 409.0
+      },
+      {
+        "responder": 0,
+        "room": "O4",
+        "time": 463.0
+      },
+      {
+        "responder": 1,
+        "room": "HALL",
+        "time": 471.0
+      },
+      {
+        "responder": 3,
+        "room": "HALL",
+        "time": 471.0
+      },
+      {
+        "responder": 2,
+        "room": "O1",
+        "time": 476.0
+      },
+      {
+        "responder": 4,
+        "room": "O1",
+        "time": 476.0
+      },
+      {
+        "responder": 1,
+        "room": "HALL",
+        "time": 508.0
+      },
+      {
+        "responder": 3,
+        "room": "HALL",
+        "time": 508.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 521.0
+      },
+      {
+        "responder": 2,
+        "room": "HALL",
+        "time": 538.0
+      },
+      {
+        "responder": 4,
+        "room": "HALL",
+        "time": 538.0
+      },
+      {
+        "responder": 0,
+        "room": "O5",
+        "time": 655.0
+      },
+      {
+        "responder": 1,
+        "room": "O1",
+        "time": 664.0
+      },
+      {
+        "responder": 3,
+        "room": "O1",
+        "time": 664.0
+      },
+      {
+        "responder": 2,
+        "room": "O5",
+        "time": 672.0
+      },
+      {
+        "responder": 4,
+        "room": "O5",
+        "time": 672.0
+      },
+      {
+        "responder": 0,
+        "room": "HALL",
+        "time": 713.0
+      },
+      {
+        "responder": 2,
+        "room": "HALL",
+        "time": 721.0
+      },
+      {
+        "responder": 4,
+        "room": "HALL",
+        "time": 721.0
+      },
+      {
+        "responder": 1,
+        "room": "HALL",
+        "time": 726.0
+      },
+      {
+        "responder": 3,
+        "room": "HALL",
+        "time": 727.0
+      },
+      {
+        "responder": 3,
+        "room": "O4",
+        "time": 763.0
+      },
+      {
+        "responder": 2,
+        "room": "O4",
+        "time": 779.0
+      },
+      {
+        "responder": 4,
+        "room": "O4",
+        "time": 779.0
+      }
+    ]
+  }
+]

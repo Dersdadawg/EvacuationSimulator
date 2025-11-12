@@ -107,10 +107,15 @@ class Simulator:
         for callback in self.event_callbacks:
             callback(event)
     
-    def step(self):
-        """Execute one simulation step"""
-        # 1. Update hazards
-        self.env.update_hazards(self.tick, self.dt)
+    def step(self, fire_enabled=True):
+        """
+        Execute one simulation step
+        
+        Args:
+            fire_enabled: If True, fire spreads and hazards update. If False, fire is frozen.
+        """
+        # 1. Update hazards (only if fire enabled)
+        self.env.update_hazards(self.tick, self.dt, fire_enabled=fire_enabled)
         
         # 2. Check agent safety (d_c > 0.95 = death)
         self._check_agent_safety()
@@ -128,10 +133,17 @@ class Simulator:
         self.time += self.dt
     
     def _check_agent_safety(self):
-        """Check if any agents are in lethal danger (d_c > 0.95 OR burning cell)"""
+        """
+        Check agent safety and trigger self-preservation behaviors:
+        - danger > 0.70: Abort mission and escape immediately
+        - danger > 0.95 OR burning: Death
+        """
         if hasattr(self.env.hazard_system, 'cells'):
+            danger_escape_threshold = self.params.get('hazard', {}).get('danger_escape_threshold', 0.70)
+            danger_death_threshold = self.params.get('hazard', {}).get('danger_death_threshold', 0.95)
+            
             for agent in self.agent_manager.agents:
-                if agent.is_dead:
+                if agent.is_dead or agent.escaped:
                     continue
                 
                 # Find cell at agent's position (cells centered at 0.25, 0.75, 1.25, etc.)
@@ -141,13 +153,30 @@ class Simulator:
                 
                 if cell_pos in self.env.hazard_system.cells:
                     cell = self.env.hazard_system.cells[cell_pos]
-                    # Die if danger > 0.95 OR in burning cell
-                    if cell.danger_level > 0.95 or cell.is_burning:
+                    
+                    # DEATH: danger > 0.95 OR in burning cell
+                    if cell.danger_level > danger_death_threshold or cell.is_burning:
                         agent.is_dead = True
                         agent.state = AgentState.IDLE  # Stop moving
-                        print(f'[DEATH] Agent {agent.id} died at ({agent.x:.1f}, {agent.y:.1f}) - d_c={cell.danger_level:.2f}, burning={cell.is_burning}')
+                        print(f'💀 [DEATH] Agent {agent.id} died at ({agent.x:.1f}, {agent.y:.1f}) - d_c={cell.danger_level:.2f}, burning={cell.is_burning}')
                         self.log_event(EventType.SIMULATION_END, agent.id, agent.current_room,
                                      {'reason': 'agent_death', 'danger': cell.danger_level, 'burning': cell.is_burning})
+                    
+                    # SELF-PRESERVATION: danger > 0.70, abort mission and escape
+                    elif cell.danger_level > danger_escape_threshold and agent.state != AgentState.ESCAPING:
+                        print(f'⚠️  [RETREAT] Agent {agent.id} aborting mission due to danger ({cell.danger_level:.2f}) - escaping!')
+                        
+                        # Drop any carried evacuee (can't save them in extreme danger)
+                        if agent.carrying_evacuee:
+                            print(f'   Agent {agent.id} had to abandon evacuee due to danger')
+                            agent.carrying_evacuee = False
+                            agent.evacuee_source_room = None
+                        
+                        # Clear current mission
+                        agent.clear_target()
+                        
+                        # Initiate escape
+                        self._assign_escape_route(agent)
     
     def _process_agent(self, agent: Agent):
         """Process one agent for this tick"""
@@ -197,7 +226,7 @@ class Simulator:
                     # Find grid path avoiding danger
                     grid_path = self.grid_pathfinder.find_path(
                         agent.x, agent.y, target_room.x, target_room.y,
-                        avoid_danger=True, danger_threshold=0.8
+                        avoid_danger=True, danger_threshold=0.6  # More cautious pathfinding
                     )
                     if grid_path and len(grid_path) > 1:
                         best_priority = priority
@@ -233,8 +262,8 @@ class Simulator:
         min_dist = float('inf')
         best_path = None
         
-        # Try to find safest path first (danger < 0.95), then ANY path
-        for danger_threshold in [0.95, 1.5]:  # 1.5 = accept any path (ignore danger)
+        # Try to find safest path first (danger < 0.7), then moderate danger, then ANY path
+        for danger_threshold in [0.7, 0.85, 1.5]:  # Multi-stage: safe → moderate → any path
             for exit_id in self.env.exits:
                 exit_room = self.env.rooms[exit_id]
                 # Try to find path to exit
@@ -415,7 +444,6 @@ class Simulator:
         if agent.time_remaining_action <= 0:
             # Search complete
             room = self.env.rooms[agent.current_room]
-            room.mark_cleared(self.tick)
             agent.complete_search()
             
             # Discover evacuees
@@ -429,12 +457,18 @@ class Simulator:
                 self.log_event(EventType.EVACUEE_FOUND, agent.id, agent.current_room,
                              {'count': evac_count})
             
-            # Check if evacuees remaining (this agent or others may pick up)
-            if room.evacuees_remaining > 0:
+            # Check if evacuees remaining AND agent not already carrying someone
+            if room.evacuees_remaining > 0 and not agent.carrying_evacuee:
                 # Pick up ONE evacuee (each agent picks up one)
                 room.rescue_evacuee()  # Decrement count immediately
                 agent.carrying_evacuee = True
                 agent.evacuee_source_room = agent.current_room
+                print(f'[RESCUE] Agent {agent.id} picked up evacuee from {agent.current_room} ({room.evacuees_remaining} remaining)')
+                
+                # Mark room as cleared ONLY if no more evacuees remaining
+                if room.evacuees_remaining == 0:
+                    room.mark_cleared(self.tick)
+                    print(f'[ROOM] {agent.current_room} fully evacuated! All rescued.')
                 
                 # Get path to exit using grid pathfinding
                 if self.grid_pathfinder:
@@ -452,7 +486,7 @@ class Simulator:
                         exit_room = self.env.rooms[nearest_exit]
                         grid_path = self.grid_pathfinder.find_path(
                             agent.x, agent.y, exit_room.x, exit_room.y,
-                            avoid_danger=True, danger_threshold=0.8
+                            avoid_danger=True, danger_threshold=0.6  # Safer routes when carrying evacuees
                         )
                         if grid_path:
                             agent.target_room = nearest_exit
@@ -464,6 +498,11 @@ class Simulator:
                     exit_id, path = self.decision_engine.get_path_to_exit(agent.current_room)
                     if exit_id and path:
                         agent.start_rescuing(exit_id, path)
+            else:
+                # No evacuees found - mark as cleared immediately
+                room.mark_cleared(self.tick)
+                print(f'[ROOM] {agent.current_room} cleared - empty room')
+                agent.state = AgentState.IDLE
     
     def _process_dragging(self, agent: Agent):
         """Process agent dragging evacuee to exit"""
@@ -533,17 +572,13 @@ class Simulator:
         # SR = (Survivors × Avg_Priority) / (Time × Responders)
         num_agents = self.params.get('agents', {}).get('count', 2)
         
-        # Get average rescue priority from events
-        rescue_events = [e for e in self.events if e.event_type == EventType.EVACUEE_RESCUED]
-        if rescue_events:
-            priorities = [e.data.get('priority', 100.0) for e in rescue_events]
-            avg_priority = sum(priorities) / len(priorities)
-        else:
-            avg_priority = 100.0  # Default baseline
+        # Calculate responder survival rate
+        num_alive = sum(1 for a in self.agent_manager.agents if not a.is_dead)
+        responder_survival_pct = (num_alive / num_agents * 100) if num_agents > 0 else 100.0
         
-        # SUCCESS RATE formula
+        # SUCCESS SCORE formula: (Occupants Rescued × % Responders Alive) / (Time × Responders)
         if self.time > 0 and num_agents > 0:
-            success_score = (rescued * avg_priority) / (self.time * num_agents)
+            success_score = (rescued * responder_survival_pct) / (self.time * num_agents)
         else:
             success_score = 0.0
         
@@ -561,7 +596,7 @@ class Simulator:
             'rooms_cleared': cleared_rooms,
             'percent_cleared': percent_cleared * 100,
             'success_score': success_score,
-            'avg_priority': avg_priority,  # For displaying formula
+            'responder_survival_pct': responder_survival_pct,  # For displaying formula
             'num_responders': num_agents,
             'avg_hazard_exposure': self.agent_manager.get_average_hazard_exposure(),
             'max_hazard': self.env.hazard_system.get_max_hazard(),

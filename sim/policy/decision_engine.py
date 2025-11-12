@@ -56,7 +56,9 @@ class DecisionEngine:
         """
         Calculate room priority with GRANULAR values
         
-        Formula: P_i(t) = A_i * E_i * (100 + λ*D_i) / (1 + distance/10)
+        Formula: P_i(t) = A_i * E_i * area_factor * (10 + λ*D_i) / (1 + distance/10)
+        
+        Where area_factor accounts for room size (larger rooms = higher priority)
         
         Args:
             room_id: Room to evaluate
@@ -73,6 +75,11 @@ class DecisionEngine:
         # If no evacuees, priority = 0
         if E_i == 0:
             return 0.0
+        
+        # Area factor: Larger rooms get higher priority
+        # Normalize to typical office (200 sq m) as baseline
+        # Small room (100 sq m) = 0.75x, Medium (200 sq m) = 1.0x, Large (600 sq m) = 2.0x
+        area_factor = 0.5 + (room.area / 200.0) * 0.5
         
         # A_i(t): Accessibility (1 if accessible, 0 if not)
         path = self.env.get_shortest_path(agent_position, room_id)
@@ -121,12 +128,12 @@ class DecisionEngine:
         # λ: Danger multiplier
         lambda_val = 10.0  # Danger weight
         
-        # SIMPLE GRANULAR FORMULA: P = E × (10 + λ×D) / (dist/10)
-        # Keeps priorities in reasonable range (not 100s!)
-        # E=2, D=0.00, dist=10: P = 2×10 / 1.0 = 20.00
-        # E=2, D=0.20, dist=10: P = 2×12 / 1.0 = 24.00 ← Fire room slightly higher
-        # E=5, D=0.20, dist=10: P = 5×12 / 1.0 = 60.00 ← More people = higher!
-        numerator = E_i * (10.0 + lambda_val * D_i)
+        # GRANULAR FORMULA WITH AREA: P = E × area_factor × (10 + λ×D) / (dist/10)
+        # Area factor accounts for room size - larger rooms get higher priority
+        # E=2, area=200, D=0.00, dist=10: P = 2×1.0×10 / 1.0 = 20.00
+        # E=2, area=600, D=0.00, dist=10: P = 2×2.0×10 / 1.0 = 40.00 ← Large room higher!
+        # E=5, area=200, D=0.20, dist=10: P = 5×1.0×12 / 1.0 = 60.00 ← More people = higher!
+        numerator = E_i * area_factor * (10.0 + lambda_val * D_i)
         denominator = distance / 10.0
         priority = A_i * numerator / denominator
         

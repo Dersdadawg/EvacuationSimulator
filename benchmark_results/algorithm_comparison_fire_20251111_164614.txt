@@ -1,0 +1,63 @@
+================================================================================
+🔥 ALGORITHM COMPARISON REPORT - WITH FIRE
+================================================================================
+
+📊 PERFORMANCE COMPARISON
+--------------------------------------------------------------------------------
+Resp  Algorithm           Time      Rescued     Deaths    Success     
+--------------------------------------------------------------------------------
+1     Priority-Based (TRP)10000     12/17       0/1       0.1200      
+1     Static Sequential   46        0/17       1/1       0.0000      
+1     Greedy Nearest      556       4/17       1/1       0.0000      
+
+2     Priority-Based (TRP)10000     12/17       0/2       0.0600      
+2     Static Sequential   166       0/17       2/2       0.0000      
+2     Greedy Nearest      1714      12/17       2/2       0.0000      
+
+3     Priority-Based (TRP)10000     12/17       0/3       0.0400      
+3     Static Sequential   166       0/17       3/3       0.0000      
+3     Greedy Nearest      1714      12/17       3/3       0.0000      
+
+4     Priority-Based (TRP)10000     12/17       0/4       0.0300      
+4     Static Sequential   166       0/17       4/4       0.0000      
+4     Greedy Nearest      1054      12/17       4/4       0.0000      
+
+5     Priority-Based (TRP)10000     12/17       0/5       0.0240      
+5     Static Sequential   166       0/17       5/5       0.0000      
+5     Greedy Nearest      712       12/17       5/5       0.0000      
+
+📈 ALGORITHM PERFORMANCE (Avg across all responder counts)
+--------------------------------------------------------------------------------
+Priority-Based:
+  Avg Success Score: 0.0548
+  Avg Occupants Rescued: 12.0/17
+  Avg Responder Deaths: 0.0
+  Avg Responders Alive: 3.0
+
+Static:
+  Avg Success Score: 0.0000
+  Avg Occupants Rescued: 0.0/17
+  Avg Responder Deaths: 3.0
+  Avg Responders Alive: 0.0
+
+Greedy:
+  Avg Success Score: 0.0000
+  Avg Occupants Rescued: 10.4/17
+  Avg Responder Deaths: 3.0
+  Avg Responders Alive: 0.0
+
+🏆 WINNER WITH FIRE
+--------------------------------------------------------------------------------
+Success Score:
+  Priority: 0.0548
+  Static:   0.0000
+  Greedy:   0.0000
+
+Responder Deaths (Avg):
+  Priority: 0.0
+  Static:   3.0
+  Greedy:   3.0
+
+WINNER: PRIORITY
+
+================================================================================

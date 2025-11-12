@@ -7,12 +7,9 @@ import time
 from pathlib import Path
 
 layouts = [
-    ("layouts/office_correct_dimensions.json", 3, "Office 3x2"),
-    ("layouts/office_small_2x2.json", 2, "Office Small 2x2"),
-    ("layouts/office_medium_2x3.json", 3, "Office Medium 2x3"),
-    ("layouts/office_large_3x2.json", 2, "Office Large 3x2"),
-    ("layouts/office_xlarge_4x2.json", 4, "Office XLarge 4x2"),
-    ("layouts/office_tiny_1x2.json", 1, "Office Tiny 1x2"),
+    ("layouts/office_correct_dimensions.json", 3, "Office Building"),
+    ("layouts/hospital_complex.json", 5, "Hospital Complex"),
+    ("layouts/school_building.json", 8, "School Building"),
 ]
 
 print("=" * 70)

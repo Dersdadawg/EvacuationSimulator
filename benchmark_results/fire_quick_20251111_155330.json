@@ -1,0 +1,72 @@
+[
+  {
+    "num_agents": 1,
+    "evacuees_per_room": 3,
+    "rescued": 12,
+    "total": 17,
+    "rescue_rate": 0.7058823529411765,
+    "agent_deaths": 0,
+    "agents_escaped": 1,
+    "agents_alive": 1,
+    "agent_survival_rate": 1.0,
+    "max_hazard": 1.0,
+    "time": 10000.0,
+    "success_score": 0.004241555396215102
+  },
+  {
+    "num_agents": 2,
+    "evacuees_per_room": 3,
+    "rescued": 12,
+    "total": 17,
+    "rescue_rate": 0.7058823529411765,
+    "agent_deaths": 0,
+    "agents_escaped": 2,
+    "agents_alive": 2,
+    "agent_survival_rate": 1.0,
+    "max_hazard": 1.0,
+    "time": 10000.0,
+    "success_score": 0.0012652717965430896
+  },
+  {
+    "num_agents": 3,
+    "evacuees_per_room": 3,
+    "rescued": 12,
+    "total": 17,
+    "rescue_rate": 0.7058823529411765,
+    "agent_deaths": 0,
+    "agents_escaped": 3,
+    "agents_alive": 3,
+    "agent_survival_rate": 1.0,
+    "max_hazard": 1.0,
+    "time": 10000.0,
+    "success_score": 0.0006538511834706422
+  },
+  {
+    "num_agents": 4,
+    "evacuees_per_room": 3,
+    "rescued": 12,
+    "total": 17,
+    "rescue_rate": 0.7058823529411765,
+    "agent_deaths": 0,
+    "agents_escaped": 4,
+    "agents_alive": 4,
+    "agent_survival_rate": 1.0,
+    "max_hazard": 1.0,
+    "time": 10000.0,
+    "success_score": 0.0003242947707254571
+  },
+  {
+    "num_agents": 5,
+    "evacuees_per_room": 3,
+    "rescued": 12,
+    "total": 17,
+    "rescue_rate": 0.7058823529411765,
+    "agent_deaths": 0,
+    "agents_escaped": 5,
+    "agents_alive": 5,
+    "agent_survival_rate": 1.0,
+    "max_hazard": 1.0,
+    "time": 10000.0,
+    "success_score": 7.846214201647705e-05
+  }
+]

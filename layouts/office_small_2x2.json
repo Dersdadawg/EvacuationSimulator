@@ -1,19 +1,16 @@
 {
   "name": "Small Office - 2x2 Grid",
-  "description": "Compact office with 4 rooms arranged 2x2",
-  "dimensions": {
-    "width": 32.0,
-    "height": 26.0
-  },
+  "description": "4 offices (15.64m x 12.68m each) with central hallway. Total: 31.28m x 34.06m.",
+  "grid_resolution": 0.5,
   "rooms": [
     {
       "id": "HALL",
       "floor": 0,
-      "x": 16.0,
-      "y": 13.0,
-      "width": 16.0,
-      "height": 4.0,
-      "area": 64.0,
+      "x": 15.14,
+      "y": 17.03,
+      "width": 32.28,
+      "height": 8.7,
+      "area": 280.8,
       "evacuees": 0,
       "is_exit": false,
       "is_stair": false,
@@ -22,38 +19,36 @@
     {
       "id": "EXIT_LEFT",
       "floor": 0,
-      "x": 2.0,
-      "y": 13.0,
-      "width": 6.0,
-      "height": 4.0,
-      "area": 24.0,
+      "x": -1.5,
+      "y": 17.03,
+      "width": 1,
+      "height": 8.7,
+      "area": 8.7,
       "evacuees": 0,
       "is_exit": true,
-      "is_stair": false,
-      "type": "exit"
+      "is_stair": false
     },
     {
       "id": "EXIT_RIGHT",
       "floor": 0,
-      "x": 30.0,
-      "y": 13.0,
-      "width": 6.0,
-      "height": 4.0,
-      "area": 24.0,
+      "x": 32.28,
+      "y": 17.03,
+      "width": 1,
+      "height": 8.7,
+      "area": 8.7,
       "evacuees": 0,
       "is_exit": true,
-      "is_stair": false,
-      "type": "exit"
+      "is_stair": false
     },
     {
       "id": "O1",
       "floor": 0,
-      "x": 8.0,
-      "y": 6.0,
-      "width": 12.0,
-      "height": 10.0,
-      "area": 120.0,
-      "evacuees": 6,
+      "x": 7.82,
+      "y": 6.34,
+      "width": 15.64,
+      "height": 12.68,
+      "area": 198.3,
+      "evacuees": 3,
       "is_exit": false,
       "is_stair": false,
       "type": "office"
@@ -61,12 +56,12 @@
     {
       "id": "O2",
       "floor": 0,
-      "x": 24.0,
-      "y": 6.0,
-      "width": 12.0,
-      "height": 10.0,
-      "area": 120.0,
-      "evacuees": 4,
+      "x": 23.46,
+      "y": 6.34,
+      "width": 15.64,
+      "height": 12.68,
+      "area": 198.3,
+      "evacuees": 2,
       "is_exit": false,
       "is_stair": false,
       "type": "office"
@@ -74,12 +69,12 @@
     {
       "id": "O3",
       "floor": 0,
-      "x": 8.0,
-      "y": 20.0,
-      "width": 12.0,
-      "height": 10.0,
-      "area": 120.0,
-      "evacuees": 5,
+      "x": 7.82,
+      "y": 27.38,
+      "width": 15.64,
+      "height": 12.68,
+      "area": 198.3,
+      "evacuees": 2,
       "is_exit": false,
       "is_stair": false,
       "type": "office"
@@ -87,11 +82,11 @@
     {
       "id": "O4",
       "floor": 0,
-      "x": 24.0,
-      "y": 20.0,
-      "width": 12.0,
-      "height": 10.0,
-      "area": 120.0,
+      "x": 23.46,
+      "y": 27.38,
+      "width": 15.64,
+      "height": 12.68,
+      "area": 198.3,
       "evacuees": 3,
       "is_exit": false,
       "is_stair": false,
@@ -99,15 +94,15 @@
     }
   ],
   "connections": [
-    {"from": "O1", "to": "HALL", "distance": 2, "door_pos": {"x": 14.0, "y": 11.0}},
-    {"from": "O2", "to": "HALL", "distance": 2, "door_pos": {"x": 30.0, "y": 11.0}},
-    {"from": "O3", "to": "HALL", "distance": 2, "door_pos": {"x": 14.0, "y": 17.0}},
-    {"from": "O4", "to": "HALL", "distance": 2, "door_pos": {"x": 30.0, "y": 17.0}}
+    {"from": "EXIT_LEFT", "to": "HALL", "distance": 1},
+    {"from": "HALL", "to": "EXIT_RIGHT", "distance": 1},
+    {"from": "O1", "to": "HALL", "distance": 2, "door_pos": {"x": 7.82, "y": 12.68}},
+    {"from": "O2", "to": "HALL", "distance": 2, "door_pos": {"x": 23.46, "y": 12.68}},
+    {"from": "O3", "to": "HALL", "distance": 2, "door_pos": {"x": 7.82, "y": 21.38}},
+    {"from": "O4", "to": "HALL", "distance": 2, "door_pos": {"x": 23.46, "y": 21.38}}
   ],
   "agent_starts": [
-    {"x": 5.0, "y": 15.0, "floor": 0},
-    {"x": 33.0, "y": 15.0, "floor": 0}
+    {"x": 1.0, "y": 17.03, "floor": 0},
+    {"x": 30.0, "y": 17.03, "floor": 0}
   ]
 }
-
-

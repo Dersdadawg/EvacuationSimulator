@@ -21,11 +21,13 @@
     "use_grid_model": true,
     "grid_resolution": 0.5,
     "fire_origin": "O1",
-    "Q_threshold": 30.0,
-    "fire_growth_rate": 0.187,
-    "weight_urgency": 0.95,
-    "weight_neighbor": 0.03,
-    "weight_permeability": 0.02
+    "Q_threshold": 75.0,
+    "fire_growth_rate": 0.0117,
+    "weight_urgency": 0.60,
+    "weight_neighbor": 0.25,
+    "weight_permeability": 0.15,
+    "danger_escape_threshold": 0.70,
+    "danger_death_threshold": 0.95
   },
   "latency": { 
     "enabled": false,

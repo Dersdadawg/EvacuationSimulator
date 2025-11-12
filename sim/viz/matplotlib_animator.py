@@ -52,12 +52,14 @@ class MatplotlibAnimator:
         self.fps = fps
         self.layouts = layouts or [
             ("layouts/office_correct_dimensions.json", 3),
-            ("layouts/office_small_2x2.json", 2),
-            ("layouts/office_medium_2x3.json", 3),
-            ("layouts/office_xlarge_4x2.json", 4),
-            ("layouts/office_tiny_1x2.json", 1),
+            ("layouts/hospital_complex.json", 5),
+            ("layouts/school_building.json", 8),
         ]
         self.current_layout_idx = 0
+        
+        # Fire toggle - allows testing pathfinding without fire
+        # Check if hazard is enabled in params
+        self.fire_enabled = self.sim.params.get('hazard', {}).get('enabled', False)
         
         # Create figure with modern styling - LARGE SIZE, wider for map
         self.fig = plt.figure(figsize=(26, 14), facecolor=self.COLORS['bg'])
@@ -105,7 +107,7 @@ class MatplotlibAnimator:
         self.priority_labels = []
         self.cell_heatmap_patches = []
         self.agent_dots = []
-        self.evacuee_dots = []
+        self.occupant_dots = []
         self.agent_trails = []
         self.persistent_trails = []  # Never cleared - shows full path
         self.grid_lines = []
@@ -134,8 +136,8 @@ class MatplotlibAnimator:
                                      fontfamily='sans-serif', color=self.COLORS['text_dark'],
                                      bbox=info_bbox, linespacing=1.5)
         
-        # Animation state
-        self.paused = False  # Start unpaused
+        # Animation state - START PAUSED
+        self.paused = True  # Start unpaused
         self.speed = 10  # Start at 10x speed!
         self.anim = None
         
@@ -242,11 +244,11 @@ class MatplotlibAnimator:
                     patch.set_alpha(0.95)  # Nearly opaque
                     patch.set_zorder(25)  # On top of everything
                 elif room.evacuees_remaining > 0:
-                    # Check if blocked
-                    if self.sim.agent_manager.agents:
-                        first_agent = self.sim.agent_manager.agents[0]
+                    # Check if blocked using stable reference
+                    if self.sim.env.exits:
+                        reference_room = self.sim.env.exits[0]
                         priority = self.sim.decision_engine.calculate_priority_index(
-                            room.id, first_agent.current_room
+                            room.id, reference_room
                         )
                         if priority == 0.0:
                             # BLOCKED: LIGHT BLUE
@@ -273,14 +275,14 @@ class MatplotlibAnimator:
         if hasattr(self.sim.env.hazard_system, 'cells'):
             cells = self.sim.env.hazard_system.cells
             
-            # Get rooms with priority = 0 for LIGHT GREEN cells
+            # Get rooms with priority = 0 for LIGHT GREEN cells (using stable reference)
             zero_priority_rooms = set()
-            if self.sim.agent_manager.agents:
-                first_agent = self.sim.agent_manager.agents[0]
+            if self.sim.env.exits:
+                reference_room = self.sim.env.exits[0]
                 for room_id, room in self.sim.env.rooms.items():
                     if hasattr(room, 'type') and room.type == 'office':
                         priority = self.sim.decision_engine.calculate_priority_index(
-                            room_id, first_agent.current_room
+                            room_id, reference_room
                         )
                         if priority == 0.0:
                             zero_priority_rooms.add(room_id)
@@ -398,11 +400,11 @@ class MatplotlibAnimator:
                     fill = True
                     alpha = 0.90  # Very visible
                 elif room.evacuees_remaining > 0:
-                    # Calculate priority to check if blocked
-                    if self.sim.agent_manager.agents:
-                        first_agent = self.sim.agent_manager.agents[0]
+                    # Calculate priority to check if blocked (using stable reference)
+                    if self.sim.env.exits:
+                        reference_room = self.sim.env.exits[0]
                         priority = self.sim.decision_engine.calculate_priority_index(
-                            room.id, first_agent.current_room
+                            room.id, reference_room
                         )
                     else:
                         priority = 1
@@ -481,11 +483,11 @@ class MatplotlibAnimator:
             # Priority index (ONLY for offices - NOT hallway, exit, or stairs)
             if (not room.is_exit and not room.is_stair and 
                 hasattr(room, 'type') and room.type == 'office'):
-                # Calculate priority using first agent's position as reference
-                if self.sim.agent_manager.agents:
-                    first_agent = self.sim.agent_manager.agents[0]
+                # Calculate priority using stable reference point
+                if self.sim.env.exits:
+                    reference_room = self.sim.env.exits[0]
                     priority = self.sim.decision_engine.calculate_priority_index(
-                        room.id, first_agent.current_room
+                        room.id, reference_room
                     )
                     
                     # Display priority with room subscript (2 decimals for granularity)
@@ -507,7 +509,13 @@ class MatplotlibAnimator:
                     self.priority_labels.append(priority_text)
     
     def _update_priority_labels(self):
-        """Update priority index labels on OFFICES ONLY"""
+        """Update priority index labels on OFFICES ONLY - using stable reference point"""
+        # Use a fixed reference point (first exit) instead of moving agent
+        # This makes priorities stable and easier to interpret
+        reference_room = None
+        if self.sim.env.exits:
+            reference_room = self.sim.env.exits[0]
+        
         for room_id, room in self.sim.env.rooms.items():
             if room.floor != self.current_floor:
                 continue
@@ -515,11 +523,10 @@ class MatplotlibAnimator:
             if room.is_exit or room.is_stair or (hasattr(room, 'type') and room.type != 'office'):
                 continue
             
-            # Calculate priority
-            if self.sim.agent_manager.agents:
-                first_agent = self.sim.agent_manager.agents[0]
+            # Calculate priority using stable reference point
+            if reference_room:
                 priority = self.sim.decision_engine.calculate_priority_index(
-                    room.id, first_agent.current_room
+                    room.id, reference_room
                 )
                 
                 # Display priority with room subscript (2 decimals for granularity)
@@ -609,6 +616,20 @@ class MatplotlibAnimator:
                 next_layout, next_agents = self.layouts[self.current_layout_idx]
                 print(f'\n[LAYOUT] Next: {next_layout} with {next_agents} agents', flush=True)
                 print(f'[LAYOUT] Close window and run: python3 main.py --layout {next_layout} --agents {next_agents}\n', flush=True)
+            elif event.key == 'f':
+                # Toggle fire on/off
+                self.fire_enabled = not self.fire_enabled
+                status = "🔥 ENABLED" if self.fire_enabled else "❄️  DISABLED"
+                print(f'\n[FIRE] Fire {status}', flush=True)
+                
+                # Spawn or extinguish fire dynamically
+                if hasattr(self.sim.env, 'hazard_system') and hasattr(self.sim.env.hazard_system, 'spawn_fire'):
+                    if self.fire_enabled:
+                        self.sim.env.hazard_system.spawn_fire()
+                    else:
+                        self.sim.env.hazard_system.extinguish_fire()
+                
+                print(f'[FIRE] {"Fire spread and hazards active" if self.fire_enabled else "Testing pathfinding without fire - all hazards frozen"}\n', flush=True)
         except Exception as e:
             print(f'[KEY ERROR] {e}', flush=True)
     
@@ -647,12 +668,13 @@ class MatplotlibAnimator:
         if not self.paused and not self.sim.complete:
             for _ in range(self.speed):
                 if not self.sim.complete:
-                    self.sim.step()
+                    # Pass fire_enabled flag to simulator
+                    self.sim.step(fire_enabled=self.fire_enabled)
         
         # Clear dynamic elements
         for dot in self.agent_dots:
             dot.remove()
-        for dot in self.evacuee_dots:
+        for dot in self.occupant_dots:
             dot.remove()
         for line in self.agent_trails:
             line.remove()
@@ -660,7 +682,7 @@ class MatplotlibAnimator:
             line.remove()
         
         self.agent_dots = []
-        self.evacuee_dots = []
+        self.occupant_dots = []
         self.agent_trails = []
         self.persistent_trails = []
         
@@ -807,28 +829,28 @@ class MatplotlibAnimator:
                                             edgecolor='none', alpha=0.95))
                 self.agent_dots.append(label)
         
-        # Draw evacuees
+        # Draw occupants with random positions
         for room_id, room in self.sim.env.rooms.items():
             if room.floor != self.current_floor:
                 continue
             if room.evacuees_remaining > 0:
-                for i in range(room.evacuees_remaining):
-                    offset_x = (i % 3 - 1) * 1.2
-                    offset_y = (i // 3) * 1.2
-                    
+                # Get random positions for evacuees
+                positions = room.get_evacuee_positions()
+                
+                for pos_x, pos_y in positions:
                     # Glow
-                    glow = patches.Circle((room.x + offset_x, room.y + offset_y), 0.6,
+                    glow = patches.Circle((pos_x, pos_y), 0.6,
                                          facecolor=self.COLORS['danger'], 
                                          alpha=0.15, edgecolor='none', zorder=5)
-                    self.evacuee_dots.append(glow)
+                    self.occupant_dots.append(glow)
                     self.ax.add_patch(glow)
                     
                     # Body
-                    person = patches.Circle((room.x + offset_x, room.y + offset_y), 0.4,
+                    person = patches.Circle((pos_x, pos_y), 0.4,
                                            facecolor=self.COLORS['danger'], 
                                            edgecolor='white',
                                            linewidth=1.2, zorder=6)
-                    self.evacuee_dots.append(person)
+                    self.occupant_dots.append(person)
                     self.ax.add_patch(person)
         
         # Update info panel with clean design
@@ -848,15 +870,19 @@ class MatplotlibAnimator:
         cleared_pct = (results['rooms_cleared'] / results['total_rooms'] * 100) \
                       if results['total_rooms'] > 0 else 0
         
+        # Fire status indicator
+        fire_status = "🔥 FIRE ON" if self.fire_enabled else "❄️  FIRE OFF (Testing Mode)"
+        fire_color = "" if self.fire_enabled else " ⚠️"
+        
         # Format info panel
         info = (
             f"Time: {self.sim.time:.1f}s  |  Floor: {self.current_floor}  |  "
-            f"Rescued: {results['evacuees_rescued']}/{results['total_evacuees']} ({rescued_pct:.0f}%)\n"
+            f"Occupants Rescued: {results['evacuees_rescued']}/{results['total_evacuees']} ({rescued_pct:.0f}%)\n"
             f"Rooms Cleared: {results['rooms_cleared']}/{results['total_rooms']} ({cleared_pct:.0f}%)  |  "
-            f"Score: {results['success_score']:.3f}  |  Speed: {self.speed}x\n"
+            f"Score: {results['success_score']:.3f}  |  Speed: {self.speed}x  |  {fire_status}{fire_color}\n"
             f"Status: {status}\n"
             f"{'─' * 60}\n"
-            f"Controls: SPACE=Play/Pause  |  J/L=Speed  |  ESC=Quit"
+            f"Controls: SPACE=Play/Pause  |  J/L=Speed  |  F=Toggle Fire  |  ESC=Quit"
         )
         
         # Show end screen only when PAUSED and complete
@@ -865,7 +891,7 @@ class MatplotlibAnimator:
         
         self.info_text.set_text(info)
         
-        return self.agent_dots + self.evacuee_dots + self.persistent_trails + self.agent_trails + [self.info_text]
+        return self.agent_dots + self.occupant_dots + self.persistent_trails + self.agent_trails + [self.info_text]
     
     def _show_end_screen(self, results):
         """Display beautiful end screen with full statistics"""
@@ -922,9 +948,9 @@ class MatplotlibAnimator:
         # Count deaths
         deaths = sum(1 for a in self.sim.agent_manager.agents if a.is_dead)
         
-        # Beautiful end stats with CORRECT SUCCESS RATE FORMULA
+        # Beautiful end stats with CORRECT SUCCESS SCORE FORMULA
         survivors = results['evacuees_rescued']
-        avg_priority = results.get('avg_priority', 100.0)
+        responder_survival = results.get('responder_survival_pct', 100.0)
         total_time = self.sim.time
         num_responders = results.get('num_responders', 2)
         success_rate = results['success_score']
@@ -937,18 +963,18 @@ class MatplotlibAnimator:
             f"FINAL RESULTS:\n"
             f"{'─' * 55}\n"
             f"Time: {total_time:.0f}s ({total_time/60:.1f} min)\n"
-            f"Rescued: {survivors}/{results['total_evacuees']}\n"
+            f"Occupants Rescued: {survivors}/{results['total_evacuees']}\n"
             f"Cleared: {results['rooms_cleared']}/{results['total_rooms']}\n"
             f"Deaths: {deaths}/{num_responders}\n"
             f"Max Hazard: {results['max_hazard']:.0%}\n"
             f"\n"
-            f"SUCCESS RATE FORMULA:\n"
-            f"SR = (Survivors × Avg_Priority) / (Time × Responders)\n"
+            f"SUCCESS SCORE FORMULA:\n"
+            f"SS = (Occupants Rescued × % Responders Alive) / (Time × Responders)\n"
             f"\n"
-            f"SR = ({survivors} × {avg_priority:.2f}) / ({total_time:.0f} × {num_responders})\n"
-            f"SR = {survivors * avg_priority:.2f} / {total_time * num_responders:.0f}\n"
+            f"SS = ({survivors} × {responder_survival:.1f}%) / ({total_time:.0f} × {num_responders})\n"
+            f"SS = {survivors * responder_survival:.1f} / {total_time * num_responders:.0f}\n"
             f"\n"
-            f"SUCCESS RATE = {success_rate:.4f}\n"
+            f"SUCCESS SCORE = {success_rate:.4f}\n"
             f"{'═' * 55}\n"
             f"Use this to evaluate weights (0.6, 0.25, 0.15)\n"
             f"Press ESC to close"

@@ -1,19 +1,16 @@
 {
-  "name": "Large Office - 3x2 Grid",
-  "description": "Large office with 6 rooms arranged in 3x2 grid (same as original)",
-  "dimensions": {
-    "width": 46.92,
-    "height": 34.06
-  },
+  "name": "Large Office - 3x2 Grid (Original)",
+  "description": "6 offices (15.64m x 12.68m each) with central hallway. Total: 46.92m x 34.06m. Same as office_correct_dimensions.",
+  "grid_resolution": 0.5,
   "rooms": [
     {
       "id": "HALL",
       "floor": 0,
-      "x": 23.46,
+      "x": 22.96,
       "y": 17.03,
-      "width": 31.28,
-      "height": 4.06,
-      "area": 127.0,
+      "width": 48.92,
+      "height": 8.7,
+      "area": 425.6,
       "evacuees": 0,
       "is_exit": false,
       "is_stair": false,
@@ -22,28 +19,26 @@
     {
       "id": "EXIT_LEFT",
       "floor": 0,
-      "x": 1.0,
+      "x": -1.5,
       "y": 17.03,
-      "width": 6.0,
-      "height": 4.06,
-      "area": 24.4,
+      "width": 1,
+      "height": 8.7,
+      "area": 8.7,
       "evacuees": 0,
       "is_exit": true,
-      "is_stair": false,
-      "type": "exit"
+      "is_stair": false
     },
     {
       "id": "EXIT_RIGHT",
       "floor": 0,
-      "x": 45.0,
+      "x": 47.92,
       "y": 17.03,
-      "width": 6.0,
-      "height": 4.06,
-      "area": 24.4,
+      "width": 1,
+      "height": 8.7,
+      "area": 8.7,
       "evacuees": 0,
       "is_exit": true,
-      "is_stair": false,
-      "type": "exit"
+      "is_stair": false
     },
     {
       "id": "O1",
@@ -125,17 +120,17 @@
     }
   ],
   "connections": [
-    {"from": "O1", "to": "HALL", "distance": 2, "door_pos": {"x": 7.82, "y": 19.02}},
-    {"from": "O2", "to": "HALL", "distance": 2, "door_pos": {"x": 23.46, "y": 19.02}},
-    {"from": "O3", "to": "HALL", "distance": 2, "door_pos": {"x": 39.1, "y": 19.02}},
-    {"from": "O4", "to": "HALL", "distance": 2, "door_pos": {"x": 7.82, "y": 25.73}},
-    {"from": "O5", "to": "HALL", "distance": 2, "door_pos": {"x": 23.46, "y": 25.73}},
-    {"from": "O6", "to": "HALL", "distance": 2, "door_pos": {"x": 39.1, "y": 25.73}}
+    {"from": "EXIT_LEFT", "to": "HALL", "distance": 1},
+    {"from": "HALL", "to": "EXIT_RIGHT", "distance": 1},
+    {"from": "O1", "to": "HALL", "distance": 2, "door_pos": {"x": 7.82, "y": 12.68}},
+    {"from": "O2", "to": "HALL", "distance": 2, "door_pos": {"x": 23.46, "y": 12.68}},
+    {"from": "O3", "to": "HALL", "distance": 2, "door_pos": {"x": 39.1, "y": 12.68}},
+    {"from": "O4", "to": "HALL", "distance": 2, "door_pos": {"x": 7.82, "y": 21.38}},
+    {"from": "O5", "to": "HALL", "distance": 2, "door_pos": {"x": 23.46, "y": 21.38}},
+    {"from": "O6", "to": "HALL", "distance": 2, "door_pos": {"x": 39.1, "y": 21.38}}
   ],
   "agent_starts": [
     {"x": 1.0, "y": 17.03, "floor": 0},
     {"x": 45.0, "y": 17.03, "floor": 0}
   ]
 }
-
-

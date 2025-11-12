@@ -1,0 +1,89 @@
+================================================================================
+BUILDING SWEEP ANALYSIS REPORT
+================================================================================
+
+📋 EXECUTIVE SUMMARY
+--------------------------------------------------------------------------------
+Building Dimensions: 46.92m × 34.06m
+Total Rooms: 7 offices
+Total Occupants: 17 people
+
+🎯 OPTIMAL CONFIGURATION
+--------------------------------------------------------------------------------
+Minimum Sweep Time: 796s (13.3 min)
+  → Achieved with 5 responders
+
+Maximum Efficiency (Success Score): 0.0274
+  → Achieved with 1 responders
+
+📊 PERFORMANCE BY RESPONDER COUNT
+--------------------------------------------------------------------------------
+Responders  Sweep Time     Rescued        Avg Distance   Score     
+--------------------------------------------------------------------------------
+1           3148s (52.5m)  17/17         792.9m        0.0274
+2           1713s (28.6m)  17/17         431.1m        0.0175
+3           1144s (19.1m)  17/17         288.8m        0.0157
+4           926s (15.4m)  17/17         231.8m        0.0167
+5           796s (13.3m)  17/17         199.2m        0.0144
+
+🗺️  ROOM SWEEP ORDER (Example: 3 Responders)
+--------------------------------------------------------------------------------
+Visit Sequence (chronological):
+  1. Responder 0 → HALL (t=0s)
+  2. Responder 1 → HALL (t=0s)
+  3. Responder 2 → HALL (t=0s)
+  4. Responder 1 → O2 (t=89s)
+  5. Responder 0 → O2 (t=91s)
+  6. Responder 2 → O2 (t=91s)
+  7. Responder 1 → HALL (t=151s)
+  8. Responder 0 → HALL (t=153s)
+  9. Responder 2 → HALL (t=153s)
+  10. Responder 1 → HALL (t=250s)
+  11. Responder 0 → HALL (t=252s)
+  12. Responder 2 → HALL (t=252s)
+  13. Responder 1 → O6 (t=282s)
+  14. Responder 0 → O6 (t=284s)
+  15. Responder 2 → O6 (t=284s)
+
+Room Clearance Times:
+  O2: 126s (2.1 min)
+  O6: 317s (5.3 min)
+  O3: 446s (7.4 min)
+  O4: 894s (14.9 min)
+  O5: 1023s (17.1 min)
+
+🚒 RESPONDER STARTING POSITIONS
+--------------------------------------------------------------------------------
+All responders start at building exits:
+  Position 1: (1.0, 17.03) - Left exit
+  Position 2: (45.0, 17.03) - Right exit
+Responders alternate between these positions
+
+⏱️  TIME ANALYSIS
+--------------------------------------------------------------------------------
+Responders  Time           Time/Room      Speedup vs 1   
+--------------------------------------------------------------------------------
+1           3148s          525s            1.00x
+2           1713s          286s            1.84x
+3           1144s          191s            2.75x
+4           926s          154s            3.40x
+5           796s          133s            3.95x
+
+💡 KEY FINDINGS
+--------------------------------------------------------------------------------
+1. Minimum Sweep Time: 796s with 5 responders
+2. Time Reduction per Additional Responder:
+   1 → 2 responders: 45.6% faster
+   2 → 3 responders: 33.2% faster
+   3 → 4 responders: 19.1% faster
+   4 → 5 responders: 14.0% faster
+
+3. Optimal Team Size: 1 responders
+   - Best efficiency per responder
+   - Minimal coordination overhead
+
+4. All configurations achieve 100% rescue rate
+   - Building fully searchable without fire
+   - No occupants left behind
+
+================================================================================
